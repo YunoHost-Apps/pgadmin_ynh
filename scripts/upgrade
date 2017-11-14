@@ -1,0 +1,89 @@
+#!/bin/bash
+
+# IMPORT GENERIC HELPERS
+source /usr/share/yunohost/helpers
+
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+# Import common cmd
+source ./_common.sh
+
+# LOAD SETTINGS
+domain=$(ynh_app_setting_get $app domain)
+path_url=$(ynh_app_setting_get $app path)
+admin=$(ynh_app_setting_get $app admin)
+final_path=$(ynh_app_setting_get $app final_path)
+db_name=$(ynh_app_setting_get $app db_name)
+
+#=================================================
+# ENSURE DOWNWARD COMPATIBILITY
+#=================================================
+
+# If db_name doesn't exist, create it
+if [ -z $db_name ]; then
+	# In older version, db_name was always phpmyadmin
+	db_name=phpmyadmin
+	ynh_app_setting_set $app db_name $db_name
+fi
+
+# If final_path doesn't exist, create it
+if [ -z $final_path ]; then
+	final_path="/var/www/$app"
+	ynh_app_setting_set $app final_path $final_path
+fi
+
+# In older version, the admin setting was admin_user
+if [ -z $admin ]; then
+	admin=$(ynh_app_setting_get $app admin_user)
+	ynh_app_setting_set "$app" admin "$admin"
+	ynh_app_setting_delete $app admin_user
+fi
+
+# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+ynh_backup_before_upgrade	# Backup the current version of the app
+ynh_clean_setup () {
+	ynh_restore_upgradebackup	# restore it if the upgrade fails
+}
+ynh_abort_if_errors	# Exit if an error occurs during the execution of the script
+
+# Normalize the URL path syntax
+path_url=$(ynh_normalize_url_path $path_url)
+
+# Download, check integrity, uncompress and patch the source from app.src
+ynh_setup_source "$final_path"
+
+# Create a dedicated nginx config
+ynh_add_nginx_config
+
+# Create a system user
+ynh_system_user_create $app
+
+# Create a dedicated php-fpm config
+ynh_add_fpm_config
+
+# CONFIGURE PHPMYADMIN
+
+# Verify the checksum and backup the file if it's different
+ynh_backup_if_checksum_is_different "$final_path/config.inc.php"
+
+ynh_replace_string "YNH_DOMAIN" "$domain" ../conf/config.inc.php
+ynh_replace_string "YNH_PMA_USER" "$db_name" ../conf/config.inc.php
+ynh_replace_string "YNH_PMA_PASSWORD" "$db_pwd" ../conf/config.inc.php
+ynh_replace_string "YNH_MYSQL_ROOT_PASSWORD" "$(cat $MYSQL_ROOT_PWD_FILE)" ../conf/config.inc.php
+cp ../conf/config.inc.php $final_path
+
+# Recalculate and store the config file checksum into the app settings
+ynh_store_file_checksum "$final_path/config.inc.php"
+
+# Set permissions to app files
+chown -R root: $final_path
+# config.inc.php contains sensitive data, restrict its access
+chown root:$app $final_path/config.inc.php
+chmod 640 $final_path/config.inc.php
+
+# Restrict access to admin only
+yunohost app addaccess --users=$admin $app
+
+# RELOAD NGINX
+systemctl reload nginx

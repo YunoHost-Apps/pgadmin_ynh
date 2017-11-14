@@ -1,0 +1,76 @@
+#!/bin/bash
+
+# IMPORT GENERIC HELPERS
+source /usr/share/yunohost/helpers
+
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+# Import common cmd
+source ./_common.sh
+
+# RETRIEVE ARGUMENTS FROM THE MANIFEST
+domain=$YNH_APP_ARG_DOMAIN
+path_url=$(ynh_normalize_url_path $YNH_APP_ARG_PATH)
+admin=$YNH_APP_ARG_ADMIN
+admin_pwd=$YNH_APP_ARG_ADMIN_PASSWORD
+
+# CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
+final_path=/var/www/$app
+test ! -e "$final_path" || ynh_die "This path already contains a folder"
+
+# Check web path availability
+ynh_webpath_available $domain $path_url
+# Register (book) web path
+ynh_webpath_register $app $domain $path_url
+
+# Build user password
+db_pwd=$(ynh_string_random 30)
+
+# STORE SETTINGS FROM MANIFEST
+ynh_app_setting_set $app domain $domain
+ynh_app_setting_set $app path $path_url
+ynh_app_setting_set $app admin $admin
+ynh_app_setting_set $app admin_pwd "$admin_pwd"
+
+# Install dependance
+install_dependance
+
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+ynh_app_setting_set $app final_path $final_path
+
+# Download, check integrity, uncompress and patch the source from app.src
+ynh_setup_source "$final_path"
+
+# Create a dedicated nginx config
+ynh_add_nginx_config
+
+# Create a dedicated php-fpm config
+ynh_add_fpm_config
+
+# POPULATE THE DATABASE
+ynh_psql_test_if_first_run
+psql_create_admin $db_user "$admin_pwd"
+
+# CONFIGURE PHPMYADMIN
+
+# ynh_replace_string "YNH_DOMAIN" "$domain" ../conf/config.inc.php
+# ynh_replace_string "YNH_PMA_USER" "$db_name" ../conf/config.inc.php
+# ynh_replace_string "YNH_PMA_PASSWORD" "$db_pwd" ../conf/config.inc.php
+# ynh_replace_string "YNH_MYSQL_ROOT_PASSWORD" "$(cat $MYSQL_ROOT_PWD_FILE)" ../conf/config.inc.php
+cp ../conf/config.inc.php ${final_path}/conf/
+
+# Recalculate and store the config file checksum into the app settings
+ynh_store_file_checksum "$final_path/conf/config.inc.php"
+
+# Set permissions to app files
+chown -R root: $final_path
+# config.inc.php contains sensitive data, restrict its access
+chown root:$app $final_path/conf/config.inc.php
+chmod 640 $final_path/conf/config.inc.php
+
+# Restrict access to admin only
+yunohost app addaccess --users=$admin $app
+
+# RELOAD NGINX
+systemctl reload nginx

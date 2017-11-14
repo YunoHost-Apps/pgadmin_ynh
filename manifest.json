@@ -1,0 +1,64 @@
+{
+    "name": "Pgadmin",
+    "id": "pgadmin",
+    "packaging_format": 1,
+    "description": {
+        "en": "Manage PostgreSQL databases over the web",
+        "fr": "Application web de gestion des bases de données PostgreSQL"
+    },
+    "version": "4-2.0",
+    "url": "https://www.pgadmin.org",
+    "license": " 	PostgreSQL",
+    "maintainer": {
+        "name": "Josué",
+        "email": "josue@tille.ch"
+    },
+    "requirements": {
+        "yunohost": ">= 2.7.2"
+    },
+    "multi_instance": false,
+    "services": [
+        "nginx",
+    ],
+    "arguments": {
+        "install" : [
+            {
+                "name": "domain",
+                "type": "domain",
+                "ask": {
+                    "en": "Choose a domain for Pgadmin",
+                    "fr": "Choisissez un domaine pour Pgadmin"
+                },
+                "example": "domain.org"
+            },
+            {
+                "name": "path",
+                "type": "path",
+                "ask": {
+                    "en": "Choose a path for Pgadmin",
+                    "fr": "Choisissez un chemin pour Pgadmin"
+                },
+                "example": "/pgadmin",
+                "default": "/pgadmin"
+            },
+            {
+                "name": "admin",
+                "type": "user",
+                "ask": {
+                    "en": "Choose the only allowed admin user",
+                    "fr": "Choisissez l'unique utilisateur autorisé"
+                },
+                "example": "johndoe"
+            }
+            {
+                "name": "admin_password",
+                "type": "password",
+                "ask": {
+                    "en": "Enter a password for the administrator",
+                    "fr": "Entrez un mot de passe pour l'administrateur"
+                },
+                "example": "**Sup3rS3cr3t**"
+            }
+        ]
+    }
+}

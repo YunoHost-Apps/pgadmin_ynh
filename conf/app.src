@@ -1,0 +1,6 @@
+SOURCE_URL=https://github.com/phppgadmin/phppgadmin/archive/c7c6beb7d9f98ff50c0efa3911f1a2d86a5eed95.zip
+SOURCE_SUM=2cad00762b1901706392a05ecc1d86ecf1bb43bb51605572629414699cfe1aef
+SOURCE_SUM_PRG=sha256sum
+SOURCE_FORMAT=zip
+SOURCE_IN_SUBDIR=true
+SOURCE_FILENAME=
