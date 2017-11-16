@@ -8,15 +8,16 @@ ynh_abort_if_errors
 
 # Import common cmd
 source ./_common.sh
+source ./psql.sh
 
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$(ynh_normalize_url_path $YNH_APP_ARG_PATH)
 admin=$YNH_APP_ARG_ADMIN
 admin_pwd=$YNH_APP_ARG_ADMIN_PASSWORD
+db_user="pgadmin"
 
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
-final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die "This path already contains a folder"
 
 # Check web path availability
@@ -27,50 +28,62 @@ ynh_webpath_register $app $domain $path_url
 # Build user password
 db_pwd=$(ynh_string_random 30)
 
+# Reserch an opened porf for pgadmin
+port=$(ynh_find_port 5050)
+
 # STORE SETTINGS FROM MANIFEST
 ynh_app_setting_set $app domain $domain
 ynh_app_setting_set $app path $path_url
+ynh_app_setting_set $app pgadmin_port $port
 ynh_app_setting_set $app admin $admin
 ynh_app_setting_set $app admin_pwd "$admin_pwd"
+ynh_app_setting_set $app db_user "$db_user"
+ynh_app_setting_set $app db_pwd "$db_pwd"
 
 # Install dependance
 install_dependance
+
+# Create user
+ynh_system_user_create $pgadmin_user /var/lib/pgadmin
 
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 ynh_app_setting_set $app final_path $final_path
 
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source "$final_path"
+setup_dir
+install_source
+
+# CONFIGURE PGADMIN
+config_pgadmin
+
+# Config uwsgi
+config_uwsgi
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
 
-# Create a dedicated php-fpm config
-ynh_add_fpm_config
+# initialisation sqlite database for pgadmin
+chmod +x ../conf/setup.exp
+source $final_path/bin/activate
+../conf/setup.exp "$final_path/bin/python2.7" "$final_path/lib/python2.7/site-packages/pgadmin4/setup.py" "$admin@$domain" "$admin_pwd"
 
 # POPULATE THE DATABASE
 ynh_psql_test_if_first_run
-psql_create_admin $db_user "$admin_pwd"
+su --command="psql -c\"CREATE USER ${db_user} WITH PASSWORD '${db_pwd}' SUPERUSER CREATEDB CREATEROLE REPLICATION\"" postgres
 
-# CONFIGURE PHPMYADMIN
+# Add Server In PGadmin database
+$final_path/bin/python2.7 config_database.py "$db_user" "$db_pwd"
+deactivate
 
-# ynh_replace_string "YNH_DOMAIN" "$domain" ../conf/config.inc.php
-# ynh_replace_string "YNH_PMA_USER" "$db_name" ../conf/config.inc.php
-# ynh_replace_string "YNH_PMA_PASSWORD" "$db_pwd" ../conf/config.inc.php
-# ynh_replace_string "YNH_MYSQL_ROOT_PASSWORD" "$(cat $MYSQL_ROOT_PWD_FILE)" ../conf/config.inc.php
-cp ../conf/config.inc.php ${final_path}/conf/
-
-# Recalculate and store the config file checksum into the app settings
-ynh_store_file_checksum "$final_path/conf/config.inc.php"
-
-# Set permissions to app files
-chown -R root: $final_path
-# config.inc.php contains sensitive data, restrict its access
-chown root:$app $final_path/conf/config.inc.php
-chmod 640 $final_path/conf/config.inc.php
+# Set permission after initialisation
+set_permission
 
 # Restrict access to admin only
 yunohost app addaccess --users=$admin $app
 
+# Configuration de logrotate
+ynh_use_logrotate /var/log/pgadmin
+
 # RELOAD NGINX
 systemctl reload nginx
+systemctl restart uwsgi

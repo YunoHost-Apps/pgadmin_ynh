@@ -8,11 +8,12 @@ set -u
 
 # Import common cmd
 source ./_common.sh
+source ./psql.sh
 
 # LOAD SETTINGS
 domain=$(ynh_app_setting_get $app domain)
 db_name=$(ynh_app_setting_get $app db_name)
-final_path=$(ynh_app_setting_get $app final_path)
+db_user="pgadmin"
 
 # Remove db user
 ynh_psql_drop_user $db_user
@@ -23,11 +24,20 @@ ynh_remove_app_dependencies || true
 # Remove the app directory securely
 ynh_secure_remove "$final_path"
 
+# Remove app data
+ynh_secure_remove /var/lib/pgadmin
+
+# Remove logrotate
+ynh_remove_logrotate
+
+# Remove logs
+ynh_secure_remove /var/log/pgadmin
+
 # Remove the dedicated nginx config
 ynh_remove_nginx_config
 
-# Remove the dedicated php-fpm config
-ynh_remove_fpm_config
+# Remove uwsgi config
+ynh_secure_remove /etc/uwsgi/apps-enabled/pgadmin.ini
 
 # Delete a system user
 ynh_system_user_delete $app

@@ -7,7 +7,8 @@ source /usr/share/yunohost/helpers
 ynh_abort_if_errors
 
 # Import common cmd
-source ./_common.sh
+source ../settings/scripts/_common.sh
+source ../settings/scripts/psql.sh
 
 # LOAD SETTINGS
 domain=$(ynh_app_setting_get $app domain)
@@ -15,50 +16,31 @@ path_url=$(ynh_app_setting_get $app path)
 admin=$(ynh_app_setting_get $app admin)
 final_path=$(ynh_app_setting_get $app final_path)
 db_name=$(ynh_app_setting_get $app db_name)
+db_user=$(ynh_app_setting_get $app db_user)
+db_pwd=$(ynh_app_setting_get $app db_pwd)
 
-#=================================================
-# CHECK IF THE APP CAN BE RESTORED
-#=================================================
+# Install dependance
+install_dependance
 
-ynh_webpath_available $domain $path_url \
-	|| ynh_die "Path not available: ${domain}${path_url}"
-test ! -d $final_path \
-	|| ynh_die "There is already a directory: $final_path "
+# Create user
+ynh_system_user_create $pgadmin_user /var/lib/pgadmin
 
-#=================================================
-# STANDARD RESTORATION STEPS
-#=================================================
-# RESTORE THE NGINX CONFIGURATION
-#=================================================
+# Restore all config and data
+ynh_restore
 
-ynh_restore_file "/etc/nginx/conf.d/$domain.d/$app.conf"
+# POPULATE THE DATABASE
+ynh_psql_test_if_first_run
+su --command="psql -c\"CREATE USER ${db_user} WITH PASSWORD '${db_pwd}' SUPERUSER CREATEDB CREATEROLE REPLICATION\"" postgres
 
-#=================================================
-# RESTORE THE APP MAIN DIR
-#=================================================
+# Set the permission
+set_permission
 
-ynh_restore_file "$final_path"
+# Restrict access to admin only
+yunohost app addaccess --users=$admin $app
 
-#=================================================
-# RESTORE THE MYSQL DATABASE
-#=================================================
-
-db_pwd=$(ynh_app_setting_get $app mysqlpwd)
-ynh_mysql_setup_db $db_name $db_name $db_pwd
-ynh_mysql_connect_as $db_name $db_pwd $db_name < ./db.sql
-
-# Create the dedicated user (if not existing)
-ynh_system_user_create $app
-
-# config.inc.php contains sensitive data, restrict its access
-chown root:$app $final_path/config.inc.php
-
-#=================================================
-# RESTORE THE PHP-FPM CONFIGURATION
-#=================================================
-
-ynh_restore_file "/etc/php5/fpm/pool.d/$app.conf"
+# Configuration de logrotate
+ynh_use_logrotate /var/log/pgadmin
 
 # RELOAD NGINX AND PHP-FPM
-systemctl reload php5-fpm
+systemctl restart uwsgi
 systemctl reload nginx

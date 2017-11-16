@@ -1,0 +1,11 @@
+SOURCE_URL=https://github.com/Josue-T/pgadmin_python_build/releases/download/v4-2.0/pgadmin_4-2.0-bin1_armv7l.tar.gz
+SOURCE_SUM=442c5ec2192b2f8cb3441937d3628c301f6eaae30754cedfd8bed8cbf30855a2
+# (Optional) Program to check the integrity (sha256sum, md5sum...)
+# default: sha256
+SOURCE_SUM_PRG=sha256sum
+# (Optional) Archive format
+# default: tar.gz
+SOURCE_FORMAT=tar.gz
+# (Optional) Put false if sources are directly in the archive root
+# default: true
+SOURCE_IN_SUBDIR=true

@@ -8,7 +8,7 @@
     },
     "version": "4-2.0",
     "url": "https://www.pgadmin.org",
-    "license": " 	PostgreSQL",
+    "license": "PostgreSQL",
     "maintainer": {
         "name": "Josué",
         "email": "josue@tille.ch"
@@ -19,6 +19,7 @@
     "multi_instance": false,
     "services": [
         "nginx",
+        "uwsgi"
     ],
     "arguments": {
         "install" : [
@@ -49,7 +50,7 @@
                     "fr": "Choisissez l'unique utilisateur autorisé"
                 },
                 "example": "johndoe"
-            }
+            },
             {
                 "name": "admin_password",
                 "type": "password",

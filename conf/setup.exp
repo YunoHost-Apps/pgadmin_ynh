@@ -1,0 +1,20 @@
+#!/usr/bin/expect
+set timeout 10
+
+set cmd [lindex $argv 0]
+set path [lindex $argv 1]
+set user [lindex $argv 2]
+set password [lindex $argv 3]
+
+spawn $cmd $path
+
+expect "Email address:"
+send "$user\r";
+
+expect "Password:"
+send "$password\r";
+
+expect "Retype password:"
+send "$password\r";
+
+interact

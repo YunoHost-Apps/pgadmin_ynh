@@ -1,0 +1,1 @@
+DESKTOP_USER = '__USER__@__DOMAIN__'

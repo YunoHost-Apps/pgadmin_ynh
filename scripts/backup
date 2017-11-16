@@ -7,35 +7,21 @@ source /usr/share/yunohost/helpers
 ynh_abort_if_errors
 
 # Import common cmd
-source ./_common.sh
+source ../settings/scripts/_common.sh
+source ../settings/scripts/psql.sh
 
 # LOAD SETTINGS
 final_path=$(ynh_app_setting_get $app final_path)
 domain=$(ynh_app_setting_get $app domain)
 db_name=$(ynh_app_setting_get $app db_name)
 
-#=================================================
-# STANDARD BACKUP STEPS
-#=================================================
 # BACKUP THE APP MAIN DIR
-#=================================================
-
 ynh_backup "$final_path"
 
-#=================================================
-# BACKUP THE NGINX CONFIGURATION
-#=================================================
-
+# Backup config
 ynh_backup "/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_backup "/etc/uwsgi/apps-enabled/pgadmin.ini"
 
-#=================================================
-# BACKUP THE PHP-FPM CONFIGURATION
-#=================================================
-
-ynh_backup "/etc/php5/fpm/pool.d/$app.conf"
-
-#=================================================
-# BACKUP THE MYSQL DATABASE
-#=================================================
-
-ynh_mysql_dump_db "$db_name" > db.sql
+# Backup Data and LOG
+ynh_backup "/var/lib/pgadmin"
+ynh_backup "/var/log/pgadmin"
