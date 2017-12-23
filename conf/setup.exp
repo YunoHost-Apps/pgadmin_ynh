@@ -1,5 +1,5 @@
 #!/usr/bin/expect
-set timeout 10
+set timeout 20
 
 set cmd [lindex $argv 0]
 set path [lindex $argv 1]
