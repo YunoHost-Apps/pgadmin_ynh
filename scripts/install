@@ -64,6 +64,7 @@ ynh_add_nginx_config
 
 # initialisation sqlite database for pgadmin
 chmod +x ../conf/setup.exp
+PS1=""
 source $final_path/bin/activate
 ../conf/setup.exp "$final_path/bin/python2.7" "$final_path/lib/python2.7/site-packages/pgadmin4/setup.py" "$admin@$domain" "$admin_pwd"
 

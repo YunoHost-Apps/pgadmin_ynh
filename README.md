@@ -29,5 +29,3 @@ Pgadmin is published under the  the PostgreSQL licence : https://www.pgadmin.org
 
 TODO
 ----
-
-- Test temps build arm
