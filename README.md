@@ -19,8 +19,12 @@ Upgrade
 
 From command line:
 
-`sudo yunohost app upgrade -u https://github.com/YunoHost-Apps/pgadmin_ynh`
+`sudo yunohost app upgrade -u pgadmin https://github.com/YunoHost-Apps/pgadmin_ynh`
 
+Issue
+-----
+
+Any issue is welcome here : https://github.com/YunoHost-Apps/pgadmin_ynh/issues
 
 License
 -------
@@ -29,3 +33,5 @@ Pgadmin is published under the  the PostgreSQL licence : https://www.pgadmin.org
 
 TODO
 ----
+
+- Add sso auth
