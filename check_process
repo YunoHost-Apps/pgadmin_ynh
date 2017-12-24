@@ -3,6 +3,7 @@
 		domain="domain.tld"	(DOMAIN)
 		path="/path"	(PATH)
 		admin="john"	(USER)
+		admin_password="Sup3rS3cr3t"	(PASSWORD)
 	; Checks
 		pkg_linter=1
 		setup_sub_dir=1
