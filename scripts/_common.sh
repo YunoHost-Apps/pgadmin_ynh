@@ -10,6 +10,8 @@ get_app_version_from_json() {
     echo $(grep '\"version\": ' "$manifest_path" | cut -d '"' -f 4)	# Retrieve the version number in the manifest file.
 }
 APP_VERSION=$(get_app_version_from_json)
+app_main_version=$(echo $APP_VERSION | cut -d'-' -f1)
+app_sub_version=$(echo $APP_VERSION | cut -d'-' -f2)
 
 install_dependance() {
 	ynh_install_app_dependencies python-pip build-essential python-dev python-virtualenv postgresql uwsgi uwsgi-plugin-python expect
@@ -40,7 +42,7 @@ install_source() {
 		cp ../conf/virtualenv_activate $final_path/bin/activate
 		source $final_path/bin/activate
 		pip install --upgrade pip
-		pip install --upgrade https://ftp.postgresql.org/pub/pgadmin/pgadmin4/v2.0/pip/pgadmin${APP_VERSION}-py2.py3-none-any.whl
+		pip install --upgrade https://ftp.postgresql.org/pub/pgadmin/pgadmin$app_main_version/v$app_sub_version/pip/pgadmin${APP_VERSION}-py2.py3-none-any.whl
 		deactivate
 	fi
 }
