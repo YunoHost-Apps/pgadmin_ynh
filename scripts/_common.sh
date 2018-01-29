@@ -52,6 +52,7 @@ set_permission() {
     chown $pgadmin_user:root -R $final_path
     chown $pgadmin_user:root -R /var/lib/pgadmin
     chown $pgadmin_user:root -R /var/log/pgadmin
+    chmod u=rwX,g=rX,o= -R /var/lib/pgadmin
 }
 
 config_pgadmin() {
