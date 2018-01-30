@@ -4,7 +4,6 @@ set timeout 20
 set cmd [lindex $argv 0]
 set path [lindex $argv 1]
 set user [lindex $argv 2]
-set password [lindex $argv 3]
 
 spawn $cmd $path
 
@@ -12,9 +11,11 @@ expect "Email address:"
 send "$user\r";
 
 expect "Password:"
-send "$password\r";
+send {__ADMIN_PASSWORD__};
+send "\r";
 
 expect "Retype password:"
-send "$password\r";
+send {__ADMIN_PASSWORD__};
+send "\r";
 
 interact

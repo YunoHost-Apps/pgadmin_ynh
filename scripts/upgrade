@@ -37,5 +37,4 @@ set_permission
 ynh_add_nginx_config
 
 # RELOAD NGINX
-systemctl reload nginx
 systemctl reload uwsgi

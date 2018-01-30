@@ -66,7 +66,8 @@ ynh_add_nginx_config
 chmod +x ../conf/setup.exp
 PS1=""
 source $final_path/bin/activate
-../conf/setup.exp "$final_path/bin/python2.7" "$final_path/lib/python2.7/site-packages/pgadmin4/setup.py" "$admin@$domain" "$admin_pwd"
+ynh_replace_special_string "__ADMIN_PASSWORD__" "$admin_pwd" "../conf/setup.exp"
+../conf/setup.exp "$final_path/bin/python2.7" "$final_path/lib/python2.7/site-packages/pgadmin4/setup.py" "$admin@$domain"
 
 # POPULATE THE DATABASE
 ynh_psql_test_if_first_run
@@ -86,5 +87,4 @@ yunohost app addaccess --users=$admin $app
 ynh_use_logrotate /var/log/pgadmin
 
 # RELOAD NGINX
-systemctl reload nginx
 systemctl restart uwsgi
