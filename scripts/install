@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#=================================================
+# GENERIC START
+#=================================================
+
 # IMPORT GENERIC HELPERS
 source /usr/share/yunohost/helpers
 
@@ -7,8 +11,8 @@ source /usr/share/yunohost/helpers
 ynh_abort_if_errors
 
 # Import common cmd
+source ./experimental_helper.sh
 source ./_common.sh
-source ./psql.sh
 
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 domain=$YNH_APP_ARG_DOMAIN
@@ -39,6 +43,10 @@ ynh_app_setting_set $app admin $admin
 ynh_app_setting_set $app admin_pwd "$admin_pwd"
 ynh_app_setting_set $app db_user "$db_user"
 ynh_app_setting_set $app db_pwd "$db_pwd"
+
+#=================================================
+# STANDARD MODIFICATIONS
+#=================================================
 
 # Install dependance
 install_dependance
@@ -76,6 +84,10 @@ su --command="psql -c\"CREATE USER ${db_user} WITH PASSWORD '${db_pwd}' SUPERUSE
 # Add Server In PGadmin database
 $final_path/bin/python2.7 config_database.py "$db_user" "$db_pwd"
 deactivate
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
 
 # Set permission after initialisation
 set_permission

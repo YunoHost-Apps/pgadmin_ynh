@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#=================================================
+# GENERIC START
+#=================================================
+
 # IMPORT GENERIC HELPERS
 source /usr/share/yunohost/helpers
 
@@ -7,8 +11,8 @@ source /usr/share/yunohost/helpers
 ynh_abort_if_errors
 
 # Import common cmd
+source ../settings/scripts/experimental_helper.sh
 source ../settings/scripts/_common.sh
-source ../settings/scripts/psql.sh
 
 # LOAD SETTINGS
 domain=$(ynh_app_setting_get $app domain)
@@ -18,6 +22,10 @@ final_path=$(ynh_app_setting_get $app final_path)
 db_name=$(ynh_app_setting_get $app db_name)
 db_user=$(ynh_app_setting_get $app db_user)
 db_pwd=$(ynh_app_setting_get $app db_pwd)
+
+#=================================================
+# STANDARD RESTORATION STEPS
+#=================================================
 
 # Install dependance
 install_dependance
@@ -31,6 +39,10 @@ ynh_restore
 # POPULATE THE DATABASE
 ynh_psql_test_if_first_run
 su --command="psql -c\"CREATE USER ${db_user} WITH PASSWORD '${db_pwd}' SUPERUSER CREATEDB CREATEROLE REPLICATION\"" postgres
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
 
 # Set the permission
 set_permission

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#=================================================
+# GENERIC START
+#=================================================
+
 # IMPORT GENERIC HELPERS
 source /usr/share/yunohost/helpers
 
@@ -7,8 +11,8 @@ source /usr/share/yunohost/helpers
 ynh_abort_if_errors
 
 # Import common cmd
+source ./experimental_helper.sh
 source ./_common.sh
-source ./psql.sh
 
 # LOAD SETTINGS
 domain=$(ynh_app_setting_get $app domain)
@@ -21,6 +25,10 @@ ynh_clean_setup () {
 	ynh_restore_upgradebackup	# restore it if the upgrade fails
 }
 
+#=================================================
+# STANDARD UPGRADE STEPS
+#=================================================
+
 # Download, check integrity, uncompress and patch the source from app.src
 install_source
 
@@ -29,6 +37,10 @@ config_pgadmin
 
 # Config uwsgi
 config_uwsgi
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
 
 # Set permission after initialisation
 set_permission

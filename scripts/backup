@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#=================================================
+# GENERIC START
+#=================================================
+
 # IMPORT GENERIC HELPERS
 source /usr/share/yunohost/helpers
 
@@ -7,13 +11,17 @@ source /usr/share/yunohost/helpers
 ynh_abort_if_errors
 
 # Import common cmd
+source ../settings/scripts/experimental_helper.sh
 source ../settings/scripts/_common.sh
-source ../settings/scripts/psql.sh
 
 # LOAD SETTINGS
 final_path=$(ynh_app_setting_get $app final_path)
 domain=$(ynh_app_setting_get $app domain)
 db_name=$(ynh_app_setting_get $app db_name)
+
+#=================================================
+# STANDARD BACKUP STEPS
+#=================================================
 
 # BACKUP THE APP MAIN DIR
 ynh_backup "$final_path"

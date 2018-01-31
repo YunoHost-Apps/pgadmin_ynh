@@ -1,17 +1,19 @@
+#=================================================
+# SET ALL CONSTANTS
+#=================================================
+
 app=$YNH_APP_INSTANCE_NAME
 final_path=/opt/yunohost/$app
 pgadmin_user="pgadmin"
 
-get_app_version_from_json() {
-   manifest_path="../manifest.json"
-    if [ ! -e "$manifest_path" ]; then
-    	manifest_path="../settings/manifest.json"	# Into the restore script, the manifest is not at the same place
-    fi
-    echo $(grep '\"version\": ' "$manifest_path" | cut -d '"' -f 4)	# Retrieve the version number in the manifest file.
-}
-APP_VERSION=$(get_app_version_from_json)
+[[ -e "../settings/manifest.json" ]] || [[ -e "../manifest.json" ]] && \
+    APP_VERSION=$(ynh_app_upstream_version)
 app_main_version=$(echo $APP_VERSION | cut -d'-' -f1)
 app_sub_version=$(echo $APP_VERSION | cut -d'-' -f2)
+
+#=================================================
+# DEFINE ALL COMMON FONCTIONS
+#=================================================
 
 install_dependance() {
 	ynh_install_app_dependencies python-pip build-essential python-dev python-virtualenv postgresql uwsgi uwsgi-plugin-python expect
