@@ -49,3 +49,6 @@ ynh_secure_remove /etc/uwsgi/apps-enabled/pgadmin.ini
 
 # Delete a system user
 ynh_system_user_delete $app
+
+# reload uwsgi
+systemctl restart uwsgi

@@ -53,6 +53,6 @@ yunohost app addaccess --users=$admin $app
 # Configuration de logrotate
 ynh_use_logrotate /var/log/pgadmin
 
-# RELOAD NGINX AND PHP-FPM
+# reload uwsgi and nginx
 systemctl restart uwsgi
 systemctl reload nginx

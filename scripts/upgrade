@@ -48,5 +48,5 @@ set_permission
 # Create a dedicated nginx config
 ynh_add_nginx_config
 
-# RELOAD NGINX
-systemctl reload uwsgi
+# reload uwsgi
+systemctl restart uwsgi
