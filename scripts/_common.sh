@@ -16,7 +16,7 @@ app_sub_version=$(echo $APP_VERSION | cut -d'-' -f2)
 #=================================================
 
 install_dependance() {
-	ynh_install_app_dependencies python-pip build-essential python-dev python-virtualenv postgresql uwsgi uwsgi-plugin-python expect
+    ynh_install_app_dependencies python-pip build-essential python-dev python-virtualenv postgresql uwsgi uwsgi-plugin-python expect
 }
 
 psql_create_admin() {
@@ -32,21 +32,26 @@ setup_dir() {
 }
 
 install_source() {
-	if [ -n "$(uname -m | grep arm)" ]
-	then
-		ynh_setup_source $final_path/ "armv7"
-	else
+    if [ -n "$(uname -m | grep arm)" ]
+    then
+        if [ "$(lsb_release --codename --short)" != "jessie" ]
+        then
+            ynh_setup_source $final_path/ "armv7_jessie"
+        else
+            ynh_setup_source $final_path/ "armv7_stretch"
+        fi
+    else
 # 		Install virtualenv if it don't exist
-		test -e $final_path/bin || virtualenv -p python2.7 $final_path
+        test -e $final_path/bin || virtualenv -p python2.7 $final_path
 
 # 		Install pgadmin in virtualenv
-		PS1=""
-		cp ../conf/virtualenv_activate $final_path/bin/activate
-		source $final_path/bin/activate
-		pip install --upgrade pip
-		pip install --upgrade https://ftp.postgresql.org/pub/pgadmin/pgadmin$app_main_version/v$app_sub_version/pip/pgadmin${APP_VERSION}-py2.py3-none-any.whl
-		deactivate
-	fi
+        PS1=""
+        cp ../conf/virtualenv_activate $final_path/bin/activate
+        source $final_path/bin/activate
+        pip install --upgrade pip
+        pip install --upgrade https://ftp.postgresql.org/pub/pgadmin/pgadmin$app_main_version/v$app_sub_version/pip/pgadmin${APP_VERSION}-py2.py3-none-any.whl
+        deactivate
+    fi
 }
 
 set_permission() {
@@ -64,9 +69,9 @@ config_pgadmin() {
 }
 
 config_uwsgi() {
-	ynh_replace_string __USER__ $pgadmin_user ../conf/pgadmin.ini
-	ynh_replace_string __FINALPATH__ $final_path ../conf/pgadmin.ini
-	ynh_replace_string __PATH__ $path_url ../conf/pgadmin.ini
-	cp ../conf/pgadmin.ini /etc/uwsgi/apps-enabled/
+    ynh_replace_string __USER__ $pgadmin_user ../conf/pgadmin.ini
+    ynh_replace_string __FINALPATH__ $final_path ../conf/pgadmin.ini
+    ynh_replace_string __PATH__ $path_url ../conf/pgadmin.ini
+    cp ../conf/pgadmin.ini /etc/uwsgi/apps-enabled/
 }
 
