@@ -29,6 +29,13 @@ ynh_webpath_available $domain $path_url
 # Register (book) web path
 ynh_webpath_register $app $domain $path_url
 
+# Get user email and check that the user exist
+email=$(ynh_user_get_info $admin 'mail')
+if [[ -z $email ]]
+then
+    ynh_die "Can't get user email, check that the user exist or that the user have an email"
+fi
+
 # Build user password
 db_pwd=$(ynh_string_random 30)
 
@@ -75,7 +82,7 @@ chmod +x ../conf/setup.exp
 PS1=""
 source $final_path/bin/activate
 ynh_replace_special_string "__ADMIN_PASSWORD__" "$admin_pwd" "../conf/setup.exp"
-../conf/setup.exp "$final_path/bin/python2.7" "$final_path/lib/python2.7/site-packages/pgadmin4/setup.py" "$admin@$domain"
+../conf/setup.exp "$final_path/bin/python2.7" "$final_path/lib/python2.7/site-packages/pgadmin4/setup.py" "$email"
 
 # POPULATE THE DATABASE
 ynh_psql_test_if_first_run
