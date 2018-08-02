@@ -63,15 +63,15 @@ set_permission() {
 }
 
 config_pgadmin() {
-    ynh_replace_string __USER__ $pgadmin_user ../conf/config_local.py
-    ynh_replace_string __DOMAIN__ $domain ../conf/config_local.py
     cp ../conf/config_local.py $final_path/lib/python2.7/site-packages/pgadmin4/config_local.py
+    ynh_replace_string __USER__ $pgadmin_user $final_path/lib/python2.7/site-packages/pgadmin4/config_local.py
+    ynh_replace_string __DOMAIN__ $domain $final_path/lib/python2.7/site-packages/pgadmin4/config_local.py
 }
 
 config_uwsgi() {
-    ynh_replace_string __USER__ $pgadmin_user ../conf/pgadmin.ini
-    ynh_replace_string __FINALPATH__ $final_path ../conf/pgadmin.ini
-    ynh_replace_string __PATH__ $path_url ../conf/pgadmin.ini
     cp ../conf/pgadmin.ini /etc/uwsgi/apps-enabled/
+    ynh_replace_string __USER__ $pgadmin_user /etc/uwsgi/apps-enabled/pgadmin.ini
+    ynh_replace_string __FINALPATH__ $final_path /etc/uwsgi/apps-enabled/pgadmin.ini
+    ynh_replace_string __PATH__ $path_url /etc/uwsgi/apps-enabled/pgadmin.ini
 }
 
