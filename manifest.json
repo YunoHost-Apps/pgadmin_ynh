@@ -1,5 +1,5 @@
 {
-    "name": "Pgadmin",
+    "name": "pgAdmin",
     "id": "pgadmin",
     "packaging_format": 1,
     "description": {
@@ -27,8 +27,8 @@
                 "name": "domain",
                 "type": "domain",
                 "ask": {
-                    "en": "Choose a domain for Pgadmin",
-                    "fr": "Choisissez un domaine pour Pgadmin"
+                    "en": "Choose a domain for pgAdmin",
+                    "fr": "Choisissez un domaine pour pgAdmin"
                 },
                 "example": "domain.org"
             },
@@ -36,8 +36,8 @@
                 "name": "path",
                 "type": "path",
                 "ask": {
-                    "en": "Choose a path for Pgadmin",
-                    "fr": "Choisissez un chemin pour Pgadmin"
+                    "en": "Choose a path for pgAdmin",
+                    "fr": "Choisissez un chemin pour pgAdmin"
                 },
                 "example": "/pgadmin",
                 "default": "/pgadmin"
