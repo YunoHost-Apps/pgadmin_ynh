@@ -1,5 +1,5 @@
-SOURCE_URL=https://github.com/Josue-T/pgadmin_python_build/releases/download/v4-3.3/pgadmin_4-3.3-jessie-bin1_armv7l.tar.gz
-SOURCE_SUM=96a5e11563389a3fa983263079644cf692f987b62a1a2b0432177ecb4256a535
+SOURCE_URL=https://github.com/Josue-T/pgadmin_python_build/releases/download/v4-3.4/pgadmin_4-3.4-jessie-bin1_armv7l.tar.gz
+SOURCE_SUM=61fc4d21ff537c8af1cd72b366f0eb9fe6d64a81da2a9cc2c2c7181cd399e117
 # (Optional) Program to check the integrity (sha256sum, md5sum...)
 # default: sha256
 SOURCE_SUM_PRG=sha256sum
