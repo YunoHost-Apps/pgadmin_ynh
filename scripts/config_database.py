@@ -5,7 +5,7 @@ import sqlite3
 import sys
 
 # Import crypto from pgadmin project
-crypto = imp.load_source('crypt', '/opt/yunohost/pgadmin/lib/python2.7/site-packages/pgadmin4/pgadmin/utils/crypto.py')
+crypto = imp.load_source('crypt', '/opt/yunohost/pgadmin/lib/python__PYTHON_VERSION__/site-packages/pgadmin4/pgadmin/utils/crypto.py')
 
 # Get arguments
 username = sys.argv[1]

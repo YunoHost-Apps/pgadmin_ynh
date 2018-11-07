@@ -10,7 +10,7 @@
     "url": "https://www.pgadmin.org",
     "license": "PostgreSQL",
     "maintainer": {
-        "name": "Josué",
+        "name": "Josué Tille",
         "email": "josue@tille.ch"
     },
     "requirements": {

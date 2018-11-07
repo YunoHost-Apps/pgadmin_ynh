@@ -5,6 +5,7 @@
 app=$YNH_APP_INSTANCE_NAME
 final_path=/opt/yunohost/$app
 pgadmin_user="pgadmin"
+python_version="3.5"
 
 [[ -e "../settings/manifest.json" ]] || [[ -e "../manifest.json" ]] && \
     APP_VERSION=$(ynh_app_upstream_version)
@@ -16,7 +17,7 @@ app_sub_version=$(echo $APP_VERSION | cut -d'-' -f2)
 #=================================================
 
 install_dependance() {
-    ynh_install_app_dependencies python-pip build-essential python-dev python-virtualenv postgresql uwsgi uwsgi-plugin-python expect
+    ynh_install_app_dependencies python3-pip build-essential python3-dev python3-venv postgresql uwsgi uwsgi-plugin-python3 expect
 }
 
 psql_create_admin() {
@@ -42,14 +43,14 @@ install_source() {
         fi
     else
 # 		Install virtualenv if it don't exist
-        test -e $final_path/bin || virtualenv -p python2.7 $final_path
+        test -e $final_path/bin/python3 || python3 -m venv $final_path
 
 # 		Install pgadmin in virtualenv
         PS1=""
         cp ../conf/virtualenv_activate $final_path/bin/activate
         source $final_path/bin/activate
-        pip install --upgrade pip
-        pip install --upgrade https://ftp.postgresql.org/pub/pgadmin/pgadmin$app_main_version/v$app_sub_version/pip/pgadmin${APP_VERSION}-py2.py3-none-any.whl
+        pip3 install --upgrade pip
+        pip3 install --upgrade https://ftp.postgresql.org/pub/pgadmin/pgadmin$app_main_version/v$app_sub_version/pip/pgadmin${APP_VERSION}-py2.py3-none-any.whl
         deactivate
     fi
 }
@@ -63,9 +64,9 @@ set_permission() {
 }
 
 config_pgadmin() {
-    cp ../conf/config_local.py $final_path/lib/python2.7/site-packages/pgadmin4/config_local.py
-    ynh_replace_string __USER__ $pgadmin_user $final_path/lib/python2.7/site-packages/pgadmin4/config_local.py
-    ynh_replace_string __DOMAIN__ $domain $final_path/lib/python2.7/site-packages/pgadmin4/config_local.py
+    cp ../conf/config_local.py $final_path/lib/python$python_version/site-packages/pgadmin4/config_local.py
+    ynh_replace_string __USER__ $pgadmin_user $final_path/lib/python$python_version/site-packages/pgadmin4/config_local.py
+    ynh_replace_string __DOMAIN__ $domain $final_path/lib/python$python_version/site-packages/pgadmin4/config_local.py
 }
 
 config_uwsgi() {
@@ -73,5 +74,6 @@ config_uwsgi() {
     ynh_replace_string __USER__ $pgadmin_user /etc/uwsgi/apps-enabled/pgadmin.ini
     ynh_replace_string __FINALPATH__ $final_path /etc/uwsgi/apps-enabled/pgadmin.ini
     ynh_replace_string __PATH__ $path_url /etc/uwsgi/apps-enabled/pgadmin.ini
+    ynh_replace_string __PYTHON_VERSION__ $python_version /etc/uwsgi/apps-enabled/pgadmin.ini
 }
 
