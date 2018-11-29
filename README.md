@@ -37,7 +37,6 @@ This app actually don't support the SSO and don't support LDAP. After the instal
 * x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/pgadmin%20(Community).svg)](https://ci-apps.yunohost.org/ci/apps/pgadmin/)
 
 * ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/pgadmin%20(Community).svg)](https://ci-apps-arm.yunohost.org/ci/apps/pgadmin/)
-* Jessie x86-64b - [![Build Status](https://ci-stretch.nohost.me/jenkins/job/pgadmin%20(Community).svg)](https://ci-stretch.nohost.me/jenkins/job/pgadmin/)
 
 
 <!--Limitations

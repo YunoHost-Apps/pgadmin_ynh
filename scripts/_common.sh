@@ -35,12 +35,7 @@ setup_dir() {
 install_source() {
     if [ -n "$(uname -m | grep arm)" ]
     then
-        if [ "$(lsb_release --codename --short)" != "jessie" ]
-        then
-            ynh_setup_source $final_path/ "armv7_jessie"
-        else
-            ynh_setup_source $final_path/ "armv7_stretch"
-        fi
+        ynh_setup_source $final_path/ "armv7_stretch"
     else
 # 		Install virtualenv if it don't exist
         test -e $final_path/bin/python3 || python3 -m venv $final_path
