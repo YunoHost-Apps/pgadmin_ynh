@@ -29,6 +29,9 @@ ynh_clean_setup () {
 # STANDARD UPGRADE STEPS
 #=================================================
 
+# Install dependance
+install_dependance
+
 # Download, check integrity, uncompress and patch the source from app.src
 install_source
 
