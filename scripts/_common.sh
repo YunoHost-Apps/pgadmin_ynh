@@ -17,7 +17,7 @@ app_sub_version=$(echo $APP_VERSION | cut -d'-' -f2)
 #=================================================
 
 install_dependance() {
-    ynh_install_app_dependencies python3-pip build-essential python3-dev python3-venv postgresql uwsgi uwsgi-plugin-python3 expect
+    ynh_install_app_dependencies python3-pip build-essential python3-dev python3-venv postgresql uwsgi uwsgi-plugin-python3 expect libpq-dev
 }
 
 psql_create_admin() {
