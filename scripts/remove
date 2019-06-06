@@ -15,40 +15,50 @@ source ./experimental_helper.sh
 source ./_common.sh
 
 # LOAD SETTINGS
-domain=$(ynh_app_setting_get $app domain)
-db_name=$(ynh_app_setting_get $app db_name)
-db_user="pgadmin"
+ynh_script_progression --message="Loading installation settings..."
+domain=$(ynh_app_setting_get --app $app --key domain)
+db_name=$(ynh_app_setting_get --app $app --key db_name)
+db_user="$app"
 
 #=================================================
 # STANDARD REMOVE
 #=================================================
 
+# Stop service
+ynh_systemd_action --service_name "uwsgi-app@$app.service" --action stop
+
 # Remove db user
+ynh_script_progression --message="Cleaning the PostgreSQL database"
 ynh_psql_drop_user $db_user
 
 # Remove depandance
+ynh_script_progression --message="Removing dependencies" --weight=10
 ynh_remove_app_dependencies || true
 
 # Remove the app directory securely
-ynh_secure_remove "$final_path"
+ynh_script_progression --message="Removing app main directory" --weight=4
+ynh_secure_remove --file="$final_path"
 
 # Remove app data
-ynh_secure_remove /var/lib/pgadmin
+ynh_secure_remove --file=/var/lib/$app
 
 # Remove logrotate
+ynh_script_progression --message="Removing logrotate configuration"
 ynh_remove_logrotate
 
 # Remove logs
-ynh_secure_remove /var/log/pgadmin
+ynh_script_progression --message="Removing logs"
+ynh_secure_remove --file=/var/log/$app
 
 # Remove the dedicated nginx config
+ynh_script_progression --message="Removing configuration"
 ynh_remove_nginx_config
 
 # Remove uwsgi config
-ynh_secure_remove /etc/uwsgi/apps-enabled/pgadmin.ini
+ynh_remove_uwsgi_service
 
 # Delete a system user
+ynh_script_progression --message="Removing the dedicated system user"
 ynh_system_user_delete $app
 
-# reload uwsgi
-systemctl restart uwsgi
+ynh_script_progression --message="Removal of $app completed" --last

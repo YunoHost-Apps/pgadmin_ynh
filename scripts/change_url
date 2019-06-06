@@ -15,15 +15,16 @@ source ./experimental_helper.sh
 source ./_common.sh
 
 # Retrive arguments
+ynh_script_progression --message="Loading installation settings..."
 old_domain=$YNH_APP_OLD_DOMAIN
 domain=$YNH_APP_NEW_DOMAIN
-path_url=$(ynh_normalize_url_path ${YNH_APP_NEW_PATH:-'/'})
-http_port=$(ynh_app_setting_get "$app" http_port)
+path_url=$(ynh_normalize_url_path $(ynh_app_setting_get --app $app --key path))
 
 #=================================================
 # STANDARD MODIFICATIONS
 #=================================================
 
+ynh_script_progression --message="Updating configuration..."
 # Update nginx config
 if [ "$old_domain" != "$domain" ]
 then
@@ -38,8 +39,12 @@ fi
 ynh_add_nginx_config
 
 # Update UWSGI Config
-config_uwsgi
+ynh_add_uwsgi_service 'pgadmin_user python_version'
 
 # Reload services
+ynh_script_progression --message="Reloading services..."
 sudo systemctl reload nginx.service
-sudo systemctl restart uwsgi.service
+ynh_systemd_action --service_name "uwsgi-app@$app.service" \
+    --line_match "WSGI app 0 (mountpoint='$path_url') ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/pgadmin.log"
+
+ynh_script_progression --message="Change of URL completed for $app" --time --last

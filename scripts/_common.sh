@@ -6,6 +6,7 @@ app=$YNH_APP_INSTANCE_NAME
 final_path=/opt/yunohost/$app
 pgadmin_user="pgadmin"
 python_version="3.5"
+dependances="python3-pip build-essential python3-dev python3-venv postgresql uwsgi uwsgi-plugin-python3 expect libpq-dev"
 
 [[ -e "../settings/manifest.json" ]] || [[ -e "../manifest.json" ]] && \
     APP_VERSION=$(ynh_app_upstream_version)
@@ -15,15 +16,6 @@ app_sub_version=$(echo $APP_VERSION | cut -d'-' -f2)
 #=================================================
 # DEFINE ALL COMMON FONCTIONS
 #=================================================
-
-install_dependance() {
-    ynh_install_app_dependencies python3-pip build-essential python3-dev python3-venv postgresql uwsgi uwsgi-plugin-python3 expect libpq-dev
-}
-
-psql_create_admin() {
-        ynh_psql_execute_as_root \
-        "CREATE USER ${1} WITH PASSWORD '${2}';"
-}
 
 setup_dir() {
     # Create empty dir for pgadmin
@@ -35,7 +27,7 @@ setup_dir() {
 install_source() {
     if [ -n "$(uname -m | grep arm)" ]
     then
-        ynh_setup_source $final_path/ "armv7_stretch"
+        ynh_setup_source --dest_dir $final_path/ --source_id "armv7_stretch"
     else
 # 		Install virtualenv if it don't exist
         test -e $final_path/bin/python3 || python3 -m venv $final_path
@@ -60,15 +52,6 @@ set_permission() {
 
 config_pgadmin() {
     cp ../conf/config_local.py $final_path/lib/python$python_version/site-packages/pgadmin4/config_local.py
-    ynh_replace_string __USER__ $pgadmin_user $final_path/lib/python$python_version/site-packages/pgadmin4/config_local.py
-    ynh_replace_string __DOMAIN__ $domain $final_path/lib/python$python_version/site-packages/pgadmin4/config_local.py
+    ynh_replace_string --match_string __USER__ --replace_string $pgadmin_user --target_file $final_path/lib/python$python_version/site-packages/pgadmin4/config_local.py
+    ynh_replace_string --match_string __DOMAIN__ --replace_string $domain --target_file $final_path/lib/python$python_version/site-packages/pgadmin4/config_local.py
 }
-
-config_uwsgi() {
-    cp ../conf/pgadmin.ini /etc/uwsgi/apps-enabled/
-    ynh_replace_string __USER__ $pgadmin_user /etc/uwsgi/apps-enabled/pgadmin.ini
-    ynh_replace_string __FINALPATH__ $final_path /etc/uwsgi/apps-enabled/pgadmin.ini
-    ynh_replace_string __PATH__ $path_url /etc/uwsgi/apps-enabled/pgadmin.ini
-    ynh_replace_string __PYTHON_VERSION__ $python_version /etc/uwsgi/apps-enabled/pgadmin.ini
-}
-
