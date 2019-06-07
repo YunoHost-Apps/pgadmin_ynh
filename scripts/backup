@@ -35,9 +35,9 @@ ynh_backup --src_path "/etc/uwsgi/apps-available/$app.ini"
 ynh_backup --src_path "/etc/systemd/system/uwsgi-app@.service"
 
 # Backup Data and LOG
-ynh_script_progression --message="Backing up synapse data..."
+ynh_script_progression --message="Backing up data..."
 ynh_backup --src_path "/var/lib/pgadmin"
-ynh_script_progression --message="Backing up synapse log..."
+ynh_script_progression --message="Backing up log..."
 ynh_backup --src_path "/var/log/pgadmin"
 ynh_backup --src_path "/var/log/uwsgi/$app"
 
