@@ -18,7 +18,7 @@ source ./_common.sh
 ynh_script_progression --message="Loading installation settings..."
 old_domain=$YNH_APP_OLD_DOMAIN
 domain=$YNH_APP_NEW_DOMAIN
-path_url=$(ynh_normalize_url_path $(ynh_app_setting_get --app $app --key path))
+path_url=$(ynh_normalize_url_path $YNH_APP_NEW_PATH)
 
 #=================================================
 # STANDARD MODIFICATIONS
