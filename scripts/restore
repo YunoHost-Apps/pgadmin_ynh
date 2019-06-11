@@ -60,11 +60,11 @@ systemctl enable "uwsgi-app@$app.service"
 #=================================================
 
 # Set the permission
-ynh_script_progression --message="Protecting directory"
+ynh_script_progression --message="Protecting directory..."
 set_permission
 
 # Restrict access to admin only
-ynh_script_progression --message="Configuring permissions"
+ynh_script_progression --message="Configuring permissions..."
 yunohost app addaccess --users=$admin $app
 
 # Configuration de logrotate
@@ -72,6 +72,7 @@ ynh_script_progression --message="Configuring log rotation..."
 ynh_use_logrotate /var/log/pgadmin
 
 # reload uwsgi and nginx
+ynh_script_progression --message="Starting pgadmin services..." --weight=3
 ynh_systemd_action --service_name "uwsgi-app@$app.service" \
     --line_match "WSGI app 0 (mountpoint='$path_url') ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/pgadmin.log"
 systemctl reload nginx

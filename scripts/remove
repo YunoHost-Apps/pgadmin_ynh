@@ -28,37 +28,37 @@ db_user="$app"
 ynh_systemd_action --service_name "uwsgi-app@$app.service" --action stop
 
 # Remove db user
-ynh_script_progression --message="Cleaning the PostgreSQL database"
+ynh_script_progression --message="Cleaning the PostgreSQL database..."
 ynh_psql_drop_user $db_user
 
 # Remove depandance
-ynh_script_progression --message="Removing dependencies" --weight=10
+ynh_script_progression --message="Removing dependencies..." --weight=10
 ynh_remove_app_dependencies || true
 
 # Remove the app directory securely
-ynh_script_progression --message="Removing app main directory" --weight=4
+ynh_script_progression --message="Removing app main directory..." --weight=4
 ynh_secure_remove --file="$final_path"
 
 # Remove app data
 ynh_secure_remove --file=/var/lib/$app
 
 # Remove logrotate
-ynh_script_progression --message="Removing logrotate configuration"
+ynh_script_progression --message="Removing logrotate configuration..."
 ynh_remove_logrotate
 
 # Remove logs
-ynh_script_progression --message="Removing logs"
+ynh_script_progression --message="Removing logs..."
 ynh_secure_remove --file=/var/log/$app
 
 # Remove the dedicated nginx config
-ynh_script_progression --message="Removing configuration"
+ynh_script_progression --message="Removing configuration..."
 ynh_remove_nginx_config
 
 # Remove uwsgi config
 ynh_remove_uwsgi_service
 
 # Delete a system user
-ynh_script_progression --message="Removing the dedicated system user"
+ynh_script_progression --message="Removing the dedicated system user..."
 ynh_system_user_delete $app
 
 ynh_script_progression --message="Removal of $app completed" --last
