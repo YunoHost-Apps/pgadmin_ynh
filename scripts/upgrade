@@ -51,6 +51,9 @@ ynh_add_uwsgi_service 'pgadmin_user python_version'
 # Create a dedicated nginx config
 ynh_add_nginx_config
 
+# Clean old uwsgi config
+ynh_secure_remove /etc/uwsgi/apps-enabled/pgadmin.ini
+
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
