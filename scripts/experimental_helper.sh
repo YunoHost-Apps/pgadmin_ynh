@@ -1,206 +1,129 @@
 #=================================================
-# POSTGRES HELPERS
+# UWSGI HELPERS
 #=================================================
 
-# Open a connection as a user
+# Check if system wide templates are available and correcly configured
 #
-# example: ynh_psql_connect_as 'user' 'pass' <<< "UPDATE ...;"
-# example: ynh_psql_connect_as 'user' 'pass' < /path/to/file.sql
-#
-# usage: ynh_psql_connect_as user pwd [db]
-# | arg: user - the user name to connect as
-# | arg: pwd - the user password
-# | arg: db - the database to connect to
-ynh_psql_connect_as() {
-	user="$1"
-	pwd="$2"
-	db="$3"
-	su --command="PGUSER=\"${user}\" PGPASSWORD=\"${pwd}\" psql \"${db}\"" postgres
+# usage: ynh_check_global_uwsgi_config
+ynh_check_global_uwsgi_config () {
+    uwsgi --version || ynh_die --message "You need to add uwsgi (and appropriate plugin) as a dependency"
+
+    cat > /etc/systemd/system/uwsgi-app@.service <<EOF
+[Unit]
+Description=%i uWSGI app
+After=syslog.target
+
+[Service]
+RuntimeDirectory=%i
+ExecStart=/usr/bin/uwsgi \
+        --ini /etc/uwsgi/apps-available/%i.ini \
+        --socket /var/run/%i/app.socket \
+        --logto /var/log/uwsgi/%i/%i.log
+User=%i
+Group=www-data
+Restart=on-failure
+KillSignal=SIGQUIT
+Type=notify
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    systemctl daemon-reload
 }
 
-# # Execute a command as root user
+# Create a dedicated uwsgi ini file to use with generic uwsgi service
 #
-# usage: ynh_psql_execute_as_root sql [db]
-# | arg: sql - the SQL command to execute
-# | arg: db - the database to connect to
-ynh_psql_execute_as_root () {
-	sql="$1"
-	su --command="psql" postgres <<< "$sql"
+# This will use a template in ../conf/uwsgi.ini
+# and will replace the following keywords with
+# global variables that should be defined before calling
+# this helper :
+#
+#   __APP__       by  $app
+#   __PATH__      by  $path_url
+#   __FINALPATH__ by  $final_path
+#
+#  And dynamic variables (from the last example) :
+#   __PATH_2__    by $path_2
+#   __PORT_2__    by $port_2
+#
+# To be able to customise the settings of the systemd unit you can override the rules with the file "conf/uwsgi-app@override.service".
+# This file will be automatically placed on the good place
+#
+# usage: ynh_add_uwsgi_service
+#
+# to interact with your service: `systemctl <action> uwsgi-app@app`
+ynh_add_uwsgi_service () {
+    ynh_check_global_uwsgi_config
+
+    local others_var=${1:-}
+    local finaluwsgiini="/etc/uwsgi/apps-available/$app.ini"
+
+    # www-data group is needed since it is this nginx who will start the service
+    usermod --append --groups www-data "$app" || ynh_die --message "It wasn't possible to add user $app to group www-data"
+
+    ynh_backup_if_checksum_is_different "$finaluwsgiini"
+    cp ../conf/uwsgi.ini "$finaluwsgiini"
+
+    # To avoid a break by set -u, use a void substitution ${var:-}. If the variable is not set, it's simply set with an empty variable.
+    # Substitute in a nginx config file only if the variable is not empty
+    if test -n "${final_path:-}"; then
+        ynh_replace_string --match_string "__FINALPATH__" --replace_string "$final_path" --target_file "$finaluwsgiini"
+    fi
+    if test -n "${path_url:-}"; then
+        ynh_replace_string --match_string "__PATH__" --replace_string "$path_url" --target_file "$finaluwsgiini"
+    fi
+    if test -n "${app:-}"; then
+        ynh_replace_string --match_string "__APP__" --replace_string "$app" --target_file "$finaluwsgiini"
+    fi
+
+    # Replace all other variable given as arguments
+    for var_to_replace in $others_var
+    do
+        # ${var_to_replace^^} make the content of the variable on upper-cases
+        # ${!var_to_replace} get the content of the variable named $var_to_replace 
+        ynh_replace_string --match_string "__${var_to_replace^^}__" --replace_string "${!var_to_replace}" --target_file "$finaluwsgiini"
+    done
+
+    ynh_store_file_checksum --file "$finaluwsgiini"
+
+    chown $app:root "$finaluwsgiini"
+
+    # make sure the folder for logs exists and set authorizations
+    mkdir -p /var/log/uwsgi/$app
+    chown $app:root /var/log/uwsgi/$app
+    chmod -R u=rwX,g=rX,o= /var/log/uwsgi/$app
+
+    # Setup specific Systemd rules if necessary
+    test -e ../conf/uwsgi-app@override.service && \
+        mkdir /etc/systemd/system/uwsgi-app@$app.service.d && \
+        cp ../conf/uwsgi-app@override.service /etc/systemd/system/uwsgi-app@$app.service.d/override.conf
+
+    systemctl daemon-reload
+    systemctl enable "uwsgi-app@$app.service"
+
+    # Add as a service
+    yunohost service add "uwsgi-app@$app" --log "/var/log/uwsgi/$app/$app.log"
 }
 
-# Execute a command from a file as root user
+# Remove the dedicated uwsgi ini file
 #
-# usage: ynh_psql_execute_file_as_root file [db]
-# | arg: file - the file containing SQL commands
-# | arg: db - the database to connect to
-ynh_psql_execute_file_as_root() {
-	file="$1"
-	db="$2"
-	su -c "psql $db" postgres < "$file"
+# usage: ynh_remove_uwsgi_service
+ynh_remove_uwsgi_service () {
+    local finaluwsgiini="/etc/uwsgi/apps-available/$app.ini"
+    if [ -e "$finaluwsgiini" ]; then
+        systemctl disable "uwsgi-app@$app.service"
+        yunohost service remove "uwsgi-app@$app"
+
+        ynh_secure_remove --file="$finaluwsgiini"
+        ynh_secure_remove --file="/var/log/uwsgi/$app"
+        ynh_secure_remove --file="/etc/systemd/system/uwsgi-app@$app.service.d"
+    fi
 }
 
-# Create a database, an user and its password. Then store the password in the app's config
-#
-# After executing this helper, the password of the created database will be available in $db_pwd
-# It will also be stored as "psqlpwd" into the app settings.
-#
-# usage: ynh_psql_setup_db user name [pwd]
-# | arg: user - Owner of the database
-# | arg: name - Name of the database
-# | arg: pwd - Password of the database. If not given, a password will be generated
-ynh_psql_setup_db () {
-	db_user="$1"
-	app="$1"
-	db_name="$2"
-	new_db_pwd=$(ynh_string_random)	# Generate a random password
-	# If $3 is not given, use new_db_pwd instead for db_pwd.
-	db_pwd="${3:-$new_db_pwd}"
-	ynh_psql_create_db "$db_name" "$db_user" "$db_pwd"	# Create the database
-	ynh_app_setting_set "$app" psqlpwd "$db_pwd"	# Store the password in the app's config
-}
-
-# Create a database and grant optionnaly privilegies to a user
-#
-# usage: ynh_psql_create_db db [user [pwd]]
-# | arg: db - the database name to create
-# | arg: user - the user to grant privilegies
-# | arg: pwd  - the user password
-ynh_psql_create_db() {
-	db="$1"
-	user="$2"
-	pwd="$3"
-	ynh_psql_create_user "$user" "$pwd"
-	su --command="createdb --owner=\"${user}\" \"${db}\"" postgres
-}
-
-# Drop a database
-#
-# usage: ynh_psql_drop_db db user
-# | arg: db - the database name to drop
-# | arg: user - the user to drop
-ynh_psql_remove_db() {
-	db="$1"
-	user="$2"
-	su --command="dropdb \"${db}\"" postgres
-	ynh_psql_drop_user "${user}"
-}
-
-# Dump a database
-#
-# example: ynh_psql_dump_db 'roundcube' > ./dump.sql
-#
-# usage: ynh_psql_dump_db db
-# | arg: db - the database name to dump
-# | ret: the psqldump output
-ynh_psql_dump_db() {
-	db="$1"
-	su --command="pg_dump \"${db}\"" postgres
-}
-
-
-# Create a user
-#
-# usage: ynh_psql_create_user user pwd [host]
-# | arg: user - the user name to create
-ynh_psql_create_user() {
-	user="$1"
-	pwd="$2"
-        su --command="psql -c\"CREATE USER ${user} WITH PASSWORD '${pwd}'\"" postgres
-}
-
-# Drop a user
-#
-# usage: ynh_psql_drop_user user
-# | arg: user - the user name to drop
-ynh_psql_drop_user() {
-	user="$1"
-	su --command="dropuser \"${user}\"" postgres
-}
-
-
-ynh_psql_test_if_first_run() {
-	if [ -f /etc/yunohost/psql ];
-	then
-		echo "PostgreSQL is already installed, no need to create master password"
-	else
-		pgsql=$(ynh_string_random)
-		pg_hba=""
-		echo "$pgsql" >> /etc/yunohost/psql
-
-		if [ -e /etc/postgresql/9.4/ ]
-		then
-			pg_hba=/etc/postgresql/9.4/main/pg_hba.conf
-		elif [ -e /etc/postgresql/9.6/ ]
-		then
-			pg_hba=/etc/postgresql/9.6/main/pg_hba.conf
-		else
-			ynh_die "postgresql shoud be 9.4 or 9.6"
-		fi
-
-		systemctl start postgresql
-                su --command="psql -c\"ALTER user postgres WITH PASSWORD '${pgsql}'\"" postgres
-		# we can't use peer since YunoHost create users with nologin
-		sed -i '/local\s*all\s*all\s*peer/i \
-		local all all password' "$pg_hba"
-		systemctl enable postgresql
-		systemctl reload postgresql
-	fi
-}
 
 #=================================================
 # OTHERS HELPERS
 #=================================================
-
-# Read the value of a key in a ynh manifest file
-#
-# usage: ynh_read_manifest manifest key
-# | arg: manifest - Path of the manifest to read
-# | arg: key - Name of the key to find
-ynh_read_manifest () {
-	manifest="$1"
-	key="$2"
-	python3 -c "import sys, json;print(json.load(open('$manifest', encoding='utf-8'))['$key'])"
-}
-
-# Read the upstream version from the manifest 
-# The version number in the manifest is defined by <upstreamversion>~ynh<packageversion>
-# For example : 4.3-2~ynh3
-# This include the number before ~ynh
-# In the last example it return 4.3-2
-#
-# usage: ynh_app_upstream_version
-ynh_app_upstream_version () {
-    manifest_path="../manifest.json"
-    if [ ! -e "$manifest_path" ]; then
-        manifest_path="../settings/manifest.json"	# Into the restore script, the manifest is not at the same place
-    fi
-    version_key=$(ynh_read_manifest "$manifest_path" "version")
-    echo "${version_key/~ynh*/}"
-}
-
-# Read package version from the manifest
-# The version number in the manifest is defined by <upstreamversion>~ynh<packageversion>
-# For example : 4.3-2~ynh3
-# This include the number after ~ynh
-# In the last example it return 3
-#
-# usage: ynh_app_package_version
-ynh_app_package_version () {
-    manifest_path="../manifest.json"
-    if [ ! -e "$manifest_path" ]; then
-        manifest_path="../settings/manifest.json"	# Into the restore script, the manifest is not at the same place
-    fi
-    version_key=$(ynh_read_manifest "$manifest_path" "version")
-    echo "${version_key/*~ynh/}"
-}
-
-# Delete a file checksum from the app settings
-#
-# $app should be defined when calling this helper
-#
-# usage: ynh_remove_file_checksum file
-# | arg: file - The file for which the checksum will be deleted
-ynh_delete_file_checksum () {
-	local checksum_setting_name=checksum_${1//[\/ ]/_}	# Replace all '/' and ' ' by '_'
-	ynh_app_setting_delete $app $checksum_setting_name
-}
