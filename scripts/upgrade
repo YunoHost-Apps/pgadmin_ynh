@@ -27,7 +27,8 @@ ynh_clean_setup () {
 	ynh_restore_upgradebackup	# restore it if the upgrade fails
 }
 
-ynh_systemd_action --service_name "uwsgi-app@$app.service" --action stop
+test -e /etc/uwsgi/apps-available/$app.ini && \
+    ynh_systemd_action --service_name "uwsgi-app@$app.service" --action stop
 
 #=================================================
 # STANDARD UPGRADE STEPS
