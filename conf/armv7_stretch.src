@@ -1,5 +1,5 @@
-SOURCE_URL=https://github.com/Josue-T/pgadmin_python_build/releases/download/v4-4.11/pgadmin_4-4.11-stretch-bin1_armv7l.tar.gz
-SOURCE_SUM=64763ae66e3dee84a8442d9bc0835efcf89d640693b53d064bfd51c1c9d5c676
+SOURCE_URL=https://github.com/Josue-T/pgadmin_python_build/releases/download/v4-4.12/pgadmin_4-4.12-stretch-bin1_armv7l.tar.gz
+SOURCE_SUM=fd4e2075d040f4ea2951d25ba1cb1151b4bb90126c7e42aa640c085aa62b41b2
 # (Optional) Program to check the integrity (sha256sum, md5sum...)
 # default: sha256
 SOURCE_SUM_PRG=sha256sum
