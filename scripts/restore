@@ -65,7 +65,7 @@ yunohost app addaccess --users=$admin $app
 
 # Configuration de logrotate
 ynh_script_progression --message="Configuring log rotation..."
-ynh_use_logrotate /var/log/pgadmin
+ynh_use_logrotate --logfile /var/log/pgadmin
 
 # reload uwsgi and nginx
 ynh_script_progression --message="Starting pgadmin services..." --weight=3

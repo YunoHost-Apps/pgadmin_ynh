@@ -17,7 +17,7 @@ source ./_common.sh
 # LOAD SETTINGS
 ynh_script_progression --message="Loading installation settings..."
 domain=$(ynh_app_setting_get --app $app --key domain)
-path_url=$(ynh_normalize_url_path $(ynh_app_setting_get --app $app --key path))
+path_url=$(ynh_normalize_url_path --path_url $(ynh_app_setting_get --app $app --key path))
 admin=$(ynh_app_setting_get --app $app --key admin)
 
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
@@ -65,7 +65,7 @@ set_permission
 
 # Configuration de logrotate
 ynh_script_progression --message="Configuring log rotation..."
-ynh_use_logrotate /var/log/pgadmin --nonappend
+ynh_use_logrotate --logfile /var/log/pgadmin --nonappend
 
 # reload uwsgi
 ynh_script_progression --message="Restarting pgadmin services..." --weight=3
