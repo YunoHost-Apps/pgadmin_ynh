@@ -28,6 +28,11 @@ setup_dir() {
 install_source() {
     if [ -n "$(uname -m | grep arm)" ]
     then
+        # Clean old file, sometime it could make some big issues if we don't do this !!
+        ynh_secure_remove --file=$final_path/bin
+        ynh_secure_remove --file=$final_path/lib
+        ynh_secure_remove --file=$final_path/include
+        ynh_secure_remove --file=$final_path/share
         ynh_setup_source --dest_dir $final_path/ --source_id "armv7_stretch"
     else
 # 		Install virtualenv if it don't exist
