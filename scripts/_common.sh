@@ -43,6 +43,7 @@ install_source() {
         cp ../conf/virtualenv_activate $final_path/bin/activate
         source $final_path/bin/activate
         pip3 install --upgrade pip
+        pip3 install --upgrade 'Werkzeug<1.0'
         pip3 install --upgrade https://ftp.postgresql.org/pub/pgadmin/pgadmin$app_main_version/v$app_sub_version/pip/pgadmin${APP_VERSION}-py2.py3-none-any.whl
         deactivate
     fi
