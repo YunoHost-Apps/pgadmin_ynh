@@ -108,7 +108,7 @@ set_permission
 
 # Restrict access to admin only
 ynh_script_progression --message="Configuring permissions"
-yunohost app addaccess --users=$admin $app
+ynh_permission_update --permission="main" --remove="all_users" --add=$admin
 
 # Configuration de logrotate
 ynh_script_progression --message="Configuring log rotation..."
