@@ -6,7 +6,7 @@
         "en": "Manage PostgreSQL databases over the web",
         "fr": "Application web de gestion des bases de données PostgreSQL"
     },
-    "version": "4-4.19~ynh1",
+    "version": "4-4.20~ynh1",
     "url": "https://www.pgadmin.org",
     "license": "PostgreSQL",
     "maintainer": {
@@ -14,7 +14,7 @@
         "email": "josue@tille.ch"
     },
     "requirements": {
-        "yunohost": ">= 3.5.2.2"
+        "yunohost": ">= 3.7.0.6"
     },
     "multi_instance": false,
     "services": [
