@@ -33,7 +33,7 @@ install_source() {
         ynh_secure_remove --file=$final_path/lib
         ynh_secure_remove --file=$final_path/include
         ynh_secure_remove --file=$final_path/share
-        ynh_setup_source --dest_dir $final_path/ --source_id "armv7_stretch"
+        ynh_setup_source --dest_dir $final_path/ --source_id "armv7_$(lsb_release --codename --short)"
     else
 # 		Install virtualenv if it don't exist
         test -e $final_path/bin/python3 || python3 -m venv $final_path
