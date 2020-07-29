@@ -82,8 +82,9 @@ ynh_script_progression --message="Configuring sqlite database..."
 
 # initialisation sqlite database for pgadmin
 chmod +x ../conf/setup.exp
-PS1=""
+set +u;
 source $final_path/bin/activate
+set -u;
 ynh_replace_special_string --match_string "__ADMIN_PASSWORD__" --replace_string "$admin_pwd" --target_file "../conf/setup.exp"
 ../conf/setup.exp "$final_path/bin/python3" "$final_path/lib/python$python_version/site-packages/pgadmin4/setup.py" "$email"
 
@@ -96,7 +97,9 @@ ynh_psql_execute_as_root \
 # Add Server In PGadmin database
 ynh_replace_string --match_string "__PYTHON_VERSION__" --replace_string "$python_version" --target_file config_database.py
 $final_path/bin/python3 config_database.py "$db_user" "$db_pwd"
+set +u;
 deactivate
+set -u;
 
 #=================================================
 # GENERIC FINALIZATION

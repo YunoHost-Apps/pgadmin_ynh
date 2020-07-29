@@ -46,13 +46,15 @@ install_source() {
         test -e $final_path/bin/python3 || python3 -m venv $final_path
 
 # 		Install pgadmin in virtualenv
-        PS1=""
-        cp ../conf/virtualenv_activate $final_path/bin/activate
+        set +u;
         source $final_path/bin/activate
+        set -u;
         pip3 install --upgrade pip
         pip3 install --upgrade 'Werkzeug<1.0'
-        pip3 install --upgrade pip3 install -I --upgrade pgadmin$app_main_version==$APP_VERSION
+        pip3 install --upgrade pgadmin$app_main_version==$app_sub_version
+        set +u;
         deactivate
+        set -u;
     fi
 }
 
