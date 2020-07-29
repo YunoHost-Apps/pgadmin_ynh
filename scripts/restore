@@ -40,6 +40,10 @@ ynh_system_user_create --username $pgadmin_user --home_dir /var/lib/$app
 ynh_script_progression --message="Restoring files..." --weight=5
 ynh_restore
 
+# Check that the good python version is installed
+# If not upgrade the source
+install_sources
+
 # POPULATE THE DATABASE
 ynh_script_progression --message="Reconfiguring Postgresql database..."
 ynh_psql_test_if_first_run

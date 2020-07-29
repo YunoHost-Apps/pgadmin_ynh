@@ -26,6 +26,13 @@ setup_dir() {
 }
 
 install_source() {
+    # Clean venv is it was on python with an old version in case major upgrade of debian
+    if [ ! -e $final_path/lib/python$python_version ]; then
+        ynh_secure_remove --file=$final_path
+    fi
+
+    mkdir -p $final_path
+
     if [ -n "$(uname -m | grep arm)" ]
     then
         # Clean old file, sometime it could make some big issues if we don't do this !!
