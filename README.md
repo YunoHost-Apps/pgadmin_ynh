@@ -1,7 +1,7 @@
 pgAdmin for yunohost
 ====================
 
-[![Integration level](https://dash.yunohost.org/integration/pgadmin.svg)](https://ci-apps.yunohost.org/ci/apps/pgadmin%20%28Community%29/lastBuild/consoleFull)  
+[![Integration level](https://dash.yunohost.org/integration/pgadmin.svg)](https://dash.yunohost.org/appci/app/pgadmin) ![](https://ci-apps.yunohost.org/ci/badges/pgadmin.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/pgadmin.maintain.svg)  
 [![Install pgadmin with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=pgadmin)
 
 > *This package allow you to install pgadmin quickly and simply on a YunoHost server.  
@@ -12,7 +12,7 @@ Overview
 
 pgAdmin is a feature rich Open Source administration and development platform for PostgreSQL.
 
-**Shipped version:** 4-4.21
+**Shipped version:** 4-4.24
 
 Screenshots
 -----------
@@ -34,10 +34,8 @@ This app actually don't support the SSO and don't support LDAP. After the instal
 
 ### Supported architectures
 
-* x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/pgadmin%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/pgadmin/)
-
+* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/pgadmin%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/pgadmin/)
 * ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/pgadmin%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/pgadmin/)
-
 
 <!--Limitations
 -----------

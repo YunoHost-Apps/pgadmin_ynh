@@ -40,6 +40,10 @@ ynh_system_user_create --username $pgadmin_user --home_dir /var/lib/$app
 ynh_script_progression --message="Restoring files..." --weight=5
 ynh_restore
 
+# Check that the good python version is installed
+# If not upgrade the source
+install_source
+
 # POPULATE THE DATABASE
 ynh_script_progression --message="Reconfiguring Postgresql database..."
 ynh_psql_test_if_first_run
@@ -70,7 +74,8 @@ ynh_use_logrotate --logfile /var/log/pgadmin
 # reload uwsgi and nginx
 ynh_script_progression --message="Starting pgadmin services..." --weight=3
 ynh_systemd_action --service_name "uwsgi-app@$app.service" \
-    --line_match "WSGI app 0 (mountpoint='$path_url') ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/pgadmin.log"
+    --line_match "WSGI app 0 \(mountpoint='$path_url'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/pgadmin.log"
 systemctl reload nginx
+sleep 10
 
 ynh_script_progression --message="Restoration completed for $app" --last

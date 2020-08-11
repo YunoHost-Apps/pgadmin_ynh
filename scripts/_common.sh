@@ -26,6 +26,13 @@ setup_dir() {
 }
 
 install_source() {
+    # Clean venv is it was on python with an old version in case major upgrade of debian
+    if [ ! -e $final_path/lib/python$python_version ]; then
+        ynh_secure_remove --file=$final_path
+    fi
+
+    mkdir -p $final_path
+
     if [ -n "$(uname -m | grep arm)" ]
     then
         # Clean old file, sometime it could make some big issues if we don't do this !!
@@ -33,19 +40,21 @@ install_source() {
         ynh_secure_remove --file=$final_path/lib
         ynh_secure_remove --file=$final_path/include
         ynh_secure_remove --file=$final_path/share
-        ynh_setup_source --dest_dir $final_path/ --source_id "armv7_stretch"
+        ynh_setup_source --dest_dir $final_path/ --source_id "armv7_$(lsb_release --codename --short)"
     else
 # 		Install virtualenv if it don't exist
         test -e $final_path/bin/python3 || python3 -m venv $final_path
 
 # 		Install pgadmin in virtualenv
-        PS1=""
-        cp ../conf/virtualenv_activate $final_path/bin/activate
+        set +u;
         source $final_path/bin/activate
+        set -u;
         pip3 install --upgrade pip
         pip3 install --upgrade 'Werkzeug<1.0'
-        pip3 install --upgrade https://ftp.postgresql.org/pub/pgadmin/pgadmin$app_main_version/v$app_sub_version/pip/pgadmin${APP_VERSION}-py2.py3-none-any.whl
+        pip3 install --upgrade pgadmin$app_main_version==$app_sub_version
+        set +u;
         deactivate
+        set -u;
     fi
 }
 
