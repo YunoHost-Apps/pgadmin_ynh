@@ -1,5 +1,5 @@
-SOURCE_URL=https://github.com/Josue-T/pgadmin_python_build/releases/download/v4-4.25/pgadmin_4-4.25-buster-bin1_armv7l.tar.gz
-SOURCE_SUM=1ae1e3d6ec1343c86808cfc578066d56b22a72d7967ca8dbf0fb85ddfd495142
+SOURCE_URL=https://github.com/Josue-T/pgadmin_python_build/releases/download/v4-4.26/pgadmin_4-4.26-buster-bin1_armv7l.tar.gz
+SOURCE_SUM=63c52187f81606ee3b762cf5b553b6bc852df112fdfd021e7a914187bbb23c5e
 # (Optional) Program to check the integrity (sha256sum, md5sum...)
 # default: sha256
 SOURCE_SUM_PRG=sha256sum
