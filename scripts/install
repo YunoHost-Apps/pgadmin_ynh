@@ -22,6 +22,9 @@ path_url=$(ynh_normalize_url_path --path_url $YNH_APP_ARG_PATH)
 admin=$YNH_APP_ARG_ADMIN
 db_user="pgadmin"
 admin_pwd=$YNH_APP_ARG_ADMIN_PASSWORD
+app_version=$(ynh_app_upstream_version)
+app_main_version=$(echo $app_version | cut -d'-' -f1)
+app_sub_version=$(echo $app_version | cut -d'-' -f2)
 
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 test ! -e "$final_path" || ynh_die --message "This path already contains a folder"

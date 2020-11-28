@@ -8,12 +8,6 @@ pgadmin_user="pgadmin"
 python_version="$(python3 -V | cut -d' ' -f2 | cut -d. -f1-2)"
 dependances="python3-pip build-essential python3-dev python3-venv postgresql uwsgi uwsgi-plugin-python3 expect libpq-dev"
 
-if [[ -e "../settings/manifest.json" ]] || [[ -e "../manifest.json" ]]; then
-    APP_VERSION=$(ynh_app_upstream_version)
-    app_main_version=$(echo $APP_VERSION | cut -d'-' -f1)
-    app_sub_version=$(echo $APP_VERSION | cut -d'-' -f2)
-fi
-
 #=================================================
 # DEFINE ALL COMMON FONCTIONS
 #=================================================

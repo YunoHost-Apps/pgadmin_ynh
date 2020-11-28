@@ -19,6 +19,9 @@ ynh_script_progression --message="Loading installation settings..."
 final_path=$(ynh_app_setting_get --app $app --key final_path)
 domain=$(ynh_app_setting_get --app $app --key domain)
 db_name=$(ynh_app_setting_get --app $app --key db_name)
+app_version=$(ynh_app_upstream_version)
+app_main_version=$(echo $app_version | cut -d'-' -f1)
+app_sub_version=$(echo $app_version | cut -d'-' -f2)
 
 #=================================================
 # STANDARD BACKUP STEPS
