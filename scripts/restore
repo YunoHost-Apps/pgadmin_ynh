@@ -23,6 +23,9 @@ final_path=$(ynh_app_setting_get --app $app --key final_path)
 db_name=$(ynh_app_setting_get --app $app --key db_name)
 db_user=$(ynh_app_setting_get --app $app --key db_user)
 db_pwd=$(ynh_app_setting_get --app $app --key db_pwd)
+app_version=$(ynh_app_upstream_version)
+app_main_version=$(echo $app_version | cut -d'-' -f1)
+app_sub_version=$(echo $app_version | cut -d'-' -f2)
 
 #=================================================
 # STANDARD RESTORATION STEPS
