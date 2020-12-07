@@ -9,22 +9,24 @@ ynh_check_global_uwsgi_config () {
     uwsgi --version || ynh_die --message="You need to add uwsgi (and appropriate plugin) as a dependency"
 
     cat > /etc/systemd/system/uwsgi-app@.service <<EOF
-[Unit]
 Description=%i uWSGI app
 After=syslog.target
+
 [Service]
 RuntimeDirectory=%i
 ExecStart=/usr/bin/uwsgi \
         --ini /etc/uwsgi/apps-available/%i.ini \
-        --socket /var/run/%i/app.socket \
+        --socket /run/%i/app.socket \
         --logto /var/log/uwsgi/%i/%i.log
 User=%i
 Group=www-data
-Restart=on-failure
+Restart=always
+RestartSec=10
 KillSignal=SIGQUIT
 Type=notify
 StandardError=syslog
 NotifyAccess=all
+
 [Install]
 WantedBy=multi-user.target
 EOF
@@ -49,6 +51,10 @@ EOF
 #
 # To be able to customise the settings of the systemd unit you can override the rules with the file "conf/uwsgi-app@override.service".
 # This file will be automatically placed on the good place
+# 
+# Note that the service need to be started manually at the end of the installation.
+# Generally you can start the service with this command:
+# ynh_systemd_action --service_name "uwsgi-app@$app.service" --line_match "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
 #
 # usage: ynh_add_uwsgi_service
 #
@@ -100,9 +106,7 @@ ynh_add_uwsgi_service () {
         cp ../conf/uwsgi-app@override.service /etc/systemd/system/uwsgi-app@$app.service.d/override.conf
 
     systemctl daemon-reload
-    systemctl stop "uwsgi-app@$app.service" || true
     systemctl enable "uwsgi-app@$app.service"
-    systemctl start "uwsgi-app@$app.service"
 
     # Add as a service
     yunohost service add "uwsgi-app@$app" --log "/var/log/uwsgi/$app/$app.log"
