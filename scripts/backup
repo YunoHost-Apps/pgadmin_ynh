@@ -14,8 +14,11 @@ source /usr/share/yunohost/helpers
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
 
+#=================================================
 # LOAD SETTINGS
-ynh_script_progression --message="Loading installation settings..."
+#=================================================
+ynh_print_info --message="Loading installation settings..."
+
 final_path=$(ynh_app_setting_get --app $app --key final_path)
 domain=$(ynh_app_setting_get --app $app --key domain)
 db_name=$(ynh_app_setting_get --app $app --key db_name)
@@ -24,24 +27,38 @@ app_main_version=$(echo $app_version | cut -d'-' -f1)
 app_sub_version=$(echo $app_version | cut -d'-' -f2)
 
 #=================================================
-# STANDARD BACKUP STEPS
+# DECLARE DATA AND CONF FILES TO BACKUP
+#=================================================
+ynh_print_info --message="Declaring files to be backed up..."
+
+#=================================================
+# BACKUP THE APP MAIN DIR
 #=================================================
 
-# BACKUP THE APP MAIN DIR
-ynh_script_progression --message="Backing up the main app directory..."
 ynh_backup --src_path "$final_path"
 
-# Backup config
-ynh_script_progression --message="Backing configuration..."
+#=================================================
+# BACKUP THE NGINX CONFIGURATION
+#=================================================
+
 ynh_backup --src_path "/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_backup --src_path "/etc/uwsgi/apps-available/$app.ini"
 
-# Backup Data and LOG
-ynh_script_progression --message="Backing up data..."
+#=================================================
+# BACKUP VARIOUS FILES
+#=================================================
+
 ynh_backup --src_path "/var/lib/pgadmin"
-ynh_script_progression --message="Backing up log..."
+
+#=================================================
+# BACKUP LOG FILES
+#=================================================
+
 ynh_backup --src_path "/var/log/pgadmin"
 ynh_backup --src_path "/var/log/uwsgi/$app"
 
-ynh_script_progression --message="Backup script completed for $app. (YunoHost will then actually copy those files to the archive)." --last
+#=================================================
+# END OF SCRIPT
+#=================================================
 
+ynh_print_info --message="Backup script completed for $app. (YunoHost will then actually copy those files to the archive)." --last
