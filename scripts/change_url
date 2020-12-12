@@ -4,15 +4,15 @@
 # GENERIC START
 #=================================================
 
+# Import common cmd
+source ./experimental_helper.sh
+source ./_common.sh
+
 # Source YunoHost helpers
 source /usr/share/yunohost/helpers
 
 # Stop script if errors
 ynh_abort_if_errors
-
-# Import common cmd
-source ./experimental_helper.sh
-source ./_common.sh
 
 # Retrive arguments
 ynh_script_progression --message="Loading installation settings..."
@@ -42,10 +42,9 @@ ynh_add_nginx_config
 ynh_add_uwsgi_service 'pgadmin_user python_version'
 
 # Reload services
-ynh_script_progression --message="Reloading services..."
-sudo systemctl reload nginx.service
+ynh_script_progression --message="Restarting $app services..." --weight=3
 ynh_systemd_action --service_name "uwsgi-app@$app.service" --action restart \
-    --line_match "WSGI app 0 \(mountpoint='$path_url'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/pgadmin.log"
+    --line_match "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
 sleep 10
 
 ynh_script_progression --message="Change of URL completed for $app" --last

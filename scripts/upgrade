@@ -4,21 +4,24 @@
 # GENERIC START
 #=================================================
 
+# Import common cmd
+source ./experimental_helper.sh
+source ./_common.sh
+
 # IMPORT GENERIC HELPERS
 source /usr/share/yunohost/helpers
 
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
 
-# Import common cmd
-source ./experimental_helper.sh
-source ./_common.sh
-
 # LOAD SETTINGS
 ynh_script_progression --message="Loading installation settings..."
 domain=$(ynh_app_setting_get --app $app --key domain)
 path_url=$(ynh_normalize_url_path --path_url $(ynh_app_setting_get --app $app --key path))
 admin=$(ynh_app_setting_get --app $app --key admin)
+app_version=$(ynh_app_upstream_version)
+app_main_version=$(echo $app_version | cut -d'-' -f1)
+app_sub_version=$(echo $app_version | cut -d'-' -f2)
 
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=10
@@ -68,9 +71,9 @@ ynh_script_progression --message="Configuring log rotation..."
 ynh_use_logrotate --logfile /var/log/pgadmin --nonappend
 
 # reload uwsgi
-ynh_script_progression --message="Restarting pgadmin services..." --weight=3
+ynh_script_progression --message="Restarting $app services..." --weight=3
 ynh_systemd_action --service_name "uwsgi-app@$app.service" \
-    --line_match "WSGI app 0 \(mountpoint='$path_url'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/pgadmin.log"
+    --line_match "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
 sleep 10
 
 ynh_script_progression --message="Upgrade of $app completed" --last

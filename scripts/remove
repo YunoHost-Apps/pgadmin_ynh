@@ -4,15 +4,15 @@
 # GENERIC START
 #=================================================
 
-# Source YunoHost helpers
-source /usr/share/yunohost/helpers
-
 # Stop script if errors
 set -u
 
 # Import common cmd
 source ./experimental_helper.sh
 source ./_common.sh
+
+# Source YunoHost helpers
+source /usr/share/yunohost/helpers
 
 # LOAD SETTINGS
 ynh_script_progression --message="Loading installation settings..."

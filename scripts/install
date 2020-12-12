@@ -4,15 +4,15 @@
 # GENERIC START
 #=================================================
 
+# Import common cmd
+source ./experimental_helper.sh
+source ./_common.sh
+
 # IMPORT GENERIC HELPERS
 source /usr/share/yunohost/helpers
 
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
-
-# Import common cmd
-source ./experimental_helper.sh
-source ./_common.sh
 
 ynh_script_progression --message="Validating installation parameters..."
 
@@ -22,6 +22,9 @@ path_url=$(ynh_normalize_url_path --path_url $YNH_APP_ARG_PATH)
 admin=$YNH_APP_ARG_ADMIN
 db_user="pgadmin"
 admin_pwd=$YNH_APP_ARG_ADMIN_PASSWORD
+app_version=$(ynh_app_upstream_version)
+app_main_version=$(echo $app_version | cut -d'-' -f1)
+app_sub_version=$(echo $app_version | cut -d'-' -f2)
 
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 test ! -e "$final_path" || ynh_die --message "This path already contains a folder"
@@ -118,9 +121,9 @@ ynh_script_progression --message="Configuring log rotation..."
 ynh_use_logrotate --logfile /var/log/pgadmin
 
 # reload uwsgi
-ynh_script_progression --message="Starting pgadmin services..." --weight=3
+ynh_script_progression --message="Starting $app services..." --weight=3
 ynh_systemd_action --service_name "uwsgi-app@$app.service" \
-    --line_match "WSGI app 0 \(mountpoint='$path_url'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/pgadmin.log"
+    --line_match "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
 sleep 10
 
 ynh_script_progression --message="Installation of $app completed" --last

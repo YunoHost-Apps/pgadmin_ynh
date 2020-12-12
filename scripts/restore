@@ -4,15 +4,15 @@
 # GENERIC START
 #=================================================
 
+# Import common cmd
+source ../settings/scripts/experimental_helper.sh
+source ../settings/scripts/_common.sh
+
 # IMPORT GENERIC HELPERS
 source /usr/share/yunohost/helpers
 
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
-
-# Import common cmd
-source ../settings/scripts/experimental_helper.sh
-source ../settings/scripts/_common.sh
 
 # LOAD SETTINGS
 ynh_script_progression --message="Loading settings..."
@@ -23,6 +23,9 @@ final_path=$(ynh_app_setting_get --app $app --key final_path)
 db_name=$(ynh_app_setting_get --app $app --key db_name)
 db_user=$(ynh_app_setting_get --app $app --key db_user)
 db_pwd=$(ynh_app_setting_get --app $app --key db_pwd)
+app_version=$(ynh_app_upstream_version)
+app_main_version=$(echo $app_version | cut -d'-' -f1)
+app_sub_version=$(echo $app_version | cut -d'-' -f2)
 
 #=================================================
 # STANDARD RESTORATION STEPS
@@ -74,7 +77,7 @@ ynh_use_logrotate --logfile /var/log/pgadmin
 # reload uwsgi and nginx
 ynh_script_progression --message="Starting pgadmin services..." --weight=3
 ynh_systemd_action --service_name "uwsgi-app@$app.service" \
-    --line_match "WSGI app 0 \(mountpoint='$path_url'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/pgadmin.log"
+    --line_match "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
 systemctl reload nginx
 sleep 10
 
