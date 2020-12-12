@@ -56,7 +56,8 @@ ynh_psql_execute_as_root \
 # Restore systemd configuration
 ynh_script_progression --message="Reconfiguring application..."
 ynh_check_global_uwsgi_config
-systemctl enable "uwsgi-app@$app.service"
+systemctl enable "uwsgi-app@$app" --quiet
+yunohost service add "uwsgi-app@$app" --log "/var/log/uwsgi/$app/$app.log"
 
 #=================================================
 # GENERIC FINALIZATION
@@ -67,8 +68,8 @@ ynh_script_progression --message="Protecting directory..."
 set_permission
 
 # Restrict access to admin only
-ynh_script_progression --message="Configuring permissions..."
-yunohost app addaccess --users=$admin $app
+ynh_script_progression --message="Configuring permissions"
+ynh_permission_update --permission="main" --remove="all_users" --add=$admin
 
 # Configuration de logrotate
 ynh_script_progression --message="Configuring log rotation..."

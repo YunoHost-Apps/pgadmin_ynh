@@ -2,7 +2,7 @@ pgAdmin for yunohost
 ====================
 
 [![Integration level](https://dash.yunohost.org/integration/pgadmin.svg)](https://dash.yunohost.org/appci/app/pgadmin) ![](https://ci-apps.yunohost.org/ci/badges/pgadmin.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/pgadmin.maintain.svg)  
-[![Install pgadmin with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=pgadmin)
+[![Install pgadmin with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=pgadmin)
 
 > *This package allow you to install pgadmin quickly and simply on a YunoHost server.  
 If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to know how to install and enjoy it.*
