@@ -55,9 +55,7 @@ ynh_psql_execute_as_root \
 
 # Restore systemd configuration
 ynh_script_progression --message="Reconfiguring application..."
-ynh_check_global_uwsgi_config
-systemctl enable "uwsgi-app@$app" --quiet
-yunohost service add "uwsgi-app@$app" --log "/var/log/uwsgi/$app/$app.log"
+ynh_restore_uwsgi_service
 
 #=================================================
 # GENERIC FINALIZATION
