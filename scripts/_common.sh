@@ -6,7 +6,7 @@ app=$YNH_APP_INSTANCE_NAME
 final_path=/opt/yunohost/$app
 pgadmin_user="$app"
 python_version="$(python3 -V | cut -d' ' -f2 | cut -d. -f1-2)"
-dependances="python3-pip build-essential python3-dev python3-venv postgresql uwsgi uwsgi-plugin-python3 expect libpq-dev"
+dependances="python3-pip build-essential python3-dev python3-venv postgresql uwsgi uwsgi-plugin-python3 expect libpq-dev libkrb5-dev"
 
 #=================================================
 # DEFINE ALL COMMON FONCTIONS
@@ -36,6 +36,15 @@ install_source() {
         ynh_secure_remove --file=$final_path/share
         ynh_setup_source --dest_dir $final_path/ --source_id "armv7_$(lsb_release --codename --short)"
     else
+        # Install rustup is not already installed
+        # We need this to be able to install cryptgraphy
+        export PATH="$PATH:$final_path/.cargo/bin:$final_path/.local/bin:/usr/local/sbin"
+        if [ -e $final_path/.rustup ]; then
+            sudo -u "$synapse_user" env PATH=$PATH rustup update
+        else
+            sudo -u "$synapse_user" bash -c 'curl -sSf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y --default-toolchain=stable'
+        fi
+
 # 		Install virtualenv if it don't exist
         test -e $final_path/bin/python3 || python3 -m venv $final_path
 
