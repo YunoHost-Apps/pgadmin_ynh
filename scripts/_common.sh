@@ -48,7 +48,7 @@ install_source() {
         if [ -e $final_path/.rustup ]; then
             sudo -u "$pgadmin_user" env PATH=$PATH rustup update
         else
-            sudo -u "$pgadmin_user" bash -c 'curl -sSf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y --default-toolchain=stable'
+            sudo -u "$pgadmin_user" bash -c 'curl -sSf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y --default-toolchain=stable --profile=minimal'
         fi
 
 # 		Install virtualenv if it don't exist
