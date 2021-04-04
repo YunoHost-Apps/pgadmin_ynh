@@ -22,10 +22,16 @@ setup_dir() {
 install_source() {
     # Clean venv is it was on python with an old version in case major upgrade of debian
     if [ ! -e $final_path/lib/python$python_version ]; then
-        ynh_secure_remove --file=$final_path
+        ynh_secure_remove --file=$final_path/bin
+        ynh_secure_remove --file=$final_path/lib
+        ynh_secure_remove --file=$final_path/lib64
+        ynh_secure_remove --file=$final_path/include
+        ynh_secure_remove --file=$final_path/share
+        ynh_secure_remove --file=$final_path/pyvenv.cfg
     fi
 
     mkdir -p $final_path
+    chown $pgadmin_user:root -R $final_path
 
     if [ -n "$(uname -m | grep arm)" ]
     then
@@ -40,9 +46,9 @@ install_source() {
         # We need this to be able to install cryptgraphy
         export PATH="$PATH:$final_path/.cargo/bin:$final_path/.local/bin:/usr/local/sbin"
         if [ -e $final_path/.rustup ]; then
-            sudo -u "$synapse_user" env PATH=$PATH rustup update
+            sudo -u "$pgadmin_user" env PATH=$PATH rustup update
         else
-            sudo -u "$synapse_user" bash -c 'curl -sSf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y --default-toolchain=stable'
+            sudo -u "$pgadmin_user" bash -c 'curl -sSf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y --default-toolchain=stable'
         fi
 
 # 		Install virtualenv if it don't exist
