@@ -37,7 +37,7 @@ ynh_install_app_dependencies $dependances
 
 # Create user
 ynh_script_progression --message="Recreating the dedicated system user..."
-ynh_system_user_create --username $pgadmin_user --home_dir /var/lib/$app
+ynh_system_user_create --username $pgadmin_user --home_dir $final_path
 
 # Restore all config and data
 ynh_script_progression --message="Restoring files..." --weight=5
