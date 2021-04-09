@@ -37,7 +37,7 @@ ynh_install_app_dependencies $dependances
 
 # Create user
 ynh_script_progression --message="Recreating the dedicated system user..."
-ynh_system_user_create --username $pgadmin_user --home_dir /var/lib/$app
+ynh_system_user_create --username $pgadmin_user --home_dir $final_path
 
 # Restore all config and data
 ynh_script_progression --message="Restoring files..." --weight=5
@@ -55,8 +55,7 @@ ynh_psql_execute_as_root \
 
 # Restore systemd configuration
 ynh_script_progression --message="Reconfiguring application..."
-ynh_check_global_uwsgi_config
-systemctl enable "uwsgi-app@$app.service"
+ynh_restore_uwsgi_service
 
 #=================================================
 # GENERIC FINALIZATION
@@ -67,8 +66,8 @@ ynh_script_progression --message="Protecting directory..."
 set_permission
 
 # Restrict access to admin only
-ynh_script_progression --message="Configuring permissions..."
-yunohost app addaccess --users=$admin $app
+ynh_script_progression --message="Configuring permissions"
+ynh_permission_update --permission="main" --remove="all_users" --add=$admin
 
 # Configuration de logrotate
 ynh_script_progression --message="Configuring log rotation..."

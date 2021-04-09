@@ -18,7 +18,7 @@ ynh_script_progression --message="Validating installation parameters..."
 
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 domain=$YNH_APP_ARG_DOMAIN
-path_url=$(ynh_normalize_url_path --path_url $YNH_APP_ARG_PATH)
+path_url=$YNH_APP_ARG_PATH
 admin=$YNH_APP_ARG_ADMIN
 db_user="pgadmin"
 admin_pwd=$YNH_APP_ARG_ADMIN_PASSWORD
@@ -63,7 +63,7 @@ ynh_install_app_dependencies $dependances
 
 # Create user
 ynh_script_progression --message="Configuring system user..."
-ynh_system_user_create --username $pgadmin_user --home_dir /var/lib/$app
+ynh_system_user_create --username $pgadmin_user --home_dir $final_path
 
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_script_progression --message="Installing sources files..." --weight=10

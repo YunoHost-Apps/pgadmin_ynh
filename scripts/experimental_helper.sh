@@ -128,6 +128,11 @@ ynh_remove_uwsgi_service () {
     fi
 }
 
+ynh_restore_uwsgi_service () {
+    ynh_check_global_uwsgi_config
+    systemctl enable "uwsgi-app@$app" --quiet
+    yunohost service add "uwsgi-app@$app" --log "/var/log/uwsgi/$app/$app.log"
+}
 
 #=================================================
 # OTHERS HELPERS
