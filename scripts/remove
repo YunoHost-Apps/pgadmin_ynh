@@ -4,9 +4,6 @@
 # GENERIC START
 #=================================================
 
-# Stop script if errors
-set -u
-
 # Import common cmd
 source ./experimental_helper.sh
 source ./_common.sh
