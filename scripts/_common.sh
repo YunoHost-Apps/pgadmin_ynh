@@ -58,7 +58,7 @@ install_source() {
         u_arg='u'
         set +$u_arg;
         source $final_path/bin/activate
-        set -u;
+        set -$u_arg;
         pip3 install --upgrade pip
         pip3 install --upgrade 'Werkzeug<1.0'
         pip3 install --upgrade pgadmin$app_main_version==$app_sub_version
