@@ -2,11 +2,10 @@
 # SET ALL CONSTANTS
 #=================================================
 
-app=$YNH_APP_INSTANCE_NAME
-final_path=/opt/yunohost/$app
-pgadmin_user="$app"
 python_version="$(python3 -V | cut -d' ' -f2 | cut -d. -f1-2)"
-dependances="python3-pip build-essential python3-dev python3-venv postgresql uwsgi uwsgi-plugin-python3 expect libpq-dev libkrb5-dev"
+
+# dependencies used by the app
+pkg_dependencies="python3-pip build-essential python3-dev python3-venv postgresql uwsgi uwsgi-plugin-python3 expect libpq-dev libkrb5-dev"
 
 #=================================================
 # DEFINE ALL COMMON FONCTIONS

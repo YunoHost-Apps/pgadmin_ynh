@@ -3,45 +3,78 @@
 #=================================================
 # GENERIC START
 #=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
 
-# Import common cmd
+# Keep this path for calling _common.sh inside the execution's context of backup and restore scripts
 source ../settings/scripts/experimental_helper.sh
 source ../settings/scripts/_common.sh
-
-# IMPORT GENERIC HELPERS
 source /usr/share/yunohost/helpers
 
+#=================================================
+# MANAGE SCRIPT FAILURE
+#=================================================
+
+ynh_clean_setup () {
+	ynh_clean_check_starting
+}
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
 
+#=================================================
 # LOAD SETTINGS
-ynh_script_progression --message="Loading settings..."
-domain=$(ynh_app_setting_get --app $app --key domain)
-path_url=$(ynh_app_setting_get --app $app --key path)
-admin=$(ynh_app_setting_get --app $app --key admin)
-final_path=$(ynh_app_setting_get --app $app --key final_path)
-db_name=$(ynh_app_setting_get --app $app --key db_name)
-db_user=$(ynh_app_setting_get --app $app --key db_user)
-db_pwd=$(ynh_app_setting_get --app $app --key db_pwd)
+#=================================================
+ynh_script_progression --message="Loading installation settings..."
+
+app=$YNH_APP_INSTANCE_NAME
+
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+path_url=$(ynh_app_setting_get --app=$app --key=path)
+admin=$(ynh_app_setting_get --app=$app --key=admin)
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+db_user=$(ynh_app_setting_get --app=$app --key=db_user)
+db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
+
 app_version=$(ynh_app_upstream_version)
 app_main_version=$(echo $app_version | cut -d'-' -f1)
 app_sub_version=$(echo $app_version | cut -d'-' -f2)
 
+pgadmin_user="$app"
+
 #=================================================
 # STANDARD RESTORATION STEPS
 #=================================================
+# RESTORE THE NGINX CONFIGURATION
+#=================================================
+ynh_script_progression --message="Restoring the NGINX web server configuration..."
 
-# Install dependance
-ynh_script_progression --message="Reinstalling dependencies..." --weight=5
-ynh_install_app_dependencies $dependances
+ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 
-# Create user
+#=================================================
+# RECREATE THE DEDICATED USER
+#=================================================
 ynh_script_progression --message="Recreating the dedicated system user..."
-ynh_system_user_create --username $pgadmin_user --home_dir $final_path
 
-# Restore all config and data
-ynh_script_progression --message="Restoring files..." --weight=5
-ynh_restore
+# Create the dedicated user (if not existing)
+ynh_system_user_create --username=$pgadmin_user --home_dir=$final_path
+
+#=================================================
+# RESTORE THE APP MAIN DIR
+#=================================================
+ynh_script_progression --message="Restoring the app main directory..." --weight=5
+
+ynh_restore_file --origin_path="$final_path"
+
+
+#=================================================
+# SPECIFIC RESTORATION
+#=================================================
+# REINSTALL DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Reinstalling dependencies..." --weight=5
+
+# Define and install dependencies
+ynh_install_app_dependencies $pkg_dependencies
 
 # Check that the good python version is installed
 # If not upgrade the source
@@ -50,34 +83,47 @@ install_source
 # POPULATE THE DATABASE
 ynh_script_progression --message="Reconfiguring Postgresql database..."
 ynh_psql_test_if_first_run
-ynh_psql_execute_as_root \
-    --sql "CREATE USER ${db_user} WITH PASSWORD '${db_pwd}' SUPERUSER CREATEDB CREATEROLE REPLICATION"
+ynh_psql_execute_as_root --sql "CREATE USER ${db_user} WITH PASSWORD '${db_pwd}' SUPERUSER CREATEDB CREATEROLE REPLICATION"
+
+#=================================================
+# RESTORE VARIOUS FILES
+#=================================================
+ynh_script_progression --message="Restoring various files..."
 
 # Restore systemd configuration
 ynh_script_progression --message="Reconfiguring application..."
 ynh_restore_uwsgi_service
 
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-
 # Set the permission
 ynh_script_progression --message="Protecting directory..."
 set_permission
 
-# Restrict access to admin only
-ynh_script_progression --message="Configuring permissions"
-ynh_permission_update --permission="main" --remove="all_users" --add=$admin
+#=================================================
+# RESTORE THE LOGROTATE CONFIGURATION
+#=================================================
+ynh_script_progression --message="Restoring the logrotate configuration..."
 
-# Configuration de logrotate
-ynh_script_progression --message="Configuring log rotation..."
-ynh_use_logrotate --logfile /var/log/pgadmin
+ynh_restore_file --origin_path="/etc/logrotate.d/$app"
 
-# reload uwsgi and nginx
-ynh_script_progression --message="Starting pgadmin services..." --weight=3
-ynh_systemd_action --service_name "uwsgi-app@$app.service" \
-    --line_match "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
-systemctl reload nginx
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_script_progression --message="Starting a systemd service..." --weight=3
+
+ynh_systemd_action --service_name "uwsgi-app@$app.service" --action="restart" --line_match "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# RELOAD NGINX
+#=================================================
+ynh_script_progression --message="Reloading NGINX web server..."
+
+ynh_systemd_action --service_name=nginx --action=reload
 sleep 10
+
+#=================================================
+# END OF SCRIPT
+#=================================================
 
 ynh_script_progression --message="Restoration completed for $app" --last
