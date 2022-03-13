@@ -60,6 +60,7 @@ install_source() {
         set -$u_arg;
         pip3 install --upgrade pip
         pip3 install --upgrade 'Werkzeug<1.0'
+        pip3 install --upgrade 'markupsafe==2.0.1'
         pip3 install --upgrade pgadmin$app_main_version==$app_sub_version
         set +$u_arg;
         deactivate
