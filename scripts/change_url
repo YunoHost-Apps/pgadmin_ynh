@@ -18,8 +18,8 @@ source /usr/share/yunohost/helpers
 old_domain=$YNH_APP_OLD_DOMAIN
 old_path=$YNH_APP_OLD_PATH
 
-domain=$YNH_APP_NEW_DOMAIN
-path_url=$(ynh_normalize_url_path --path_url $YNH_APP_NEW_PATH)
+new_domain=$YNH_APP_NEW_DOMAIN
+new_path=$(ynh_normalize_url_path --path_url $YNH_APP_NEW_PATH)
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -104,6 +104,9 @@ fi
 # ...
 #=================================================
 
+domain=$new_domain
+path_url=$new_path
+
 # Update UWSGI Config
 ynh_add_uwsgi_service 'pgadmin_user python_version'
 
@@ -115,7 +118,7 @@ ynh_add_uwsgi_service 'pgadmin_user python_version'
 ynh_script_progression --message="Starting a systemd service..." --weight=3
 
 # Start a systemd service
-ynh_systemd_action --service_name "uwsgi-app@$app.service" --action="restart" --line_match "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
+ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="restart" --line_match="WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path="/var/log/uwsgi/$app/$app.log"
 sleep 10
 
 #=================================================
