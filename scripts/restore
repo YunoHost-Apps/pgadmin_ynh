@@ -97,7 +97,6 @@ ynh_restore_uwsgi_service
 
 # Set the permission
 ynh_script_progression --message="Protecting directory..."
-setup_dir
 set_permission
 
 #=================================================
