@@ -89,6 +89,7 @@ ynh_psql_execute_as_root --sql "CREATE USER ${db_user} WITH PASSWORD '${db_pwd}'
 #=================================================
 ynh_script_progression --message="Restoring various files..."
 
+ynh_restore_file --origin_path="/etc/uwsgi/apps-available/$app.ini"
 ynh_restore_file --origin_path="/var/lib/pgadmin"
 
 # Restore systemd configuration
