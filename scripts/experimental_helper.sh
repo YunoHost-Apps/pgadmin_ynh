@@ -131,6 +131,12 @@ ynh_remove_uwsgi_service () {
 ynh_restore_uwsgi_service () {
     ynh_check_global_uwsgi_config
     systemctl enable "uwsgi-app@$app" --quiet
+
+    # make sure the folder for logs exists and set authorizations
+    mkdir -p /var/log/uwsgi/$app
+    chown $app:root /var/log/uwsgi/$app
+    chmod -R u=rwX,g=rX,o= /var/log/uwsgi/$app
+    
     yunohost service add "uwsgi-app@$app" --log "/var/log/uwsgi/$app/$app.log"
 }
 
