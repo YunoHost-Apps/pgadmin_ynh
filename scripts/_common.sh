@@ -72,6 +72,7 @@ set_permission() {
     # Set permission
     chown $pgadmin_user:root -R $final_path
     chown $pgadmin_user:root -R /var/lib/pgadmin
+    mkdir -p /var/log/pgadmin
     chown $pgadmin_user:root -R /var/log/pgadmin
     chown $pgadmin_user:root /var/log/uwsgi/$app
     chown $pgadmin_user:root /etc/uwsgi/apps-available/$app.ini
