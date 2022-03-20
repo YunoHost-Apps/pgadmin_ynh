@@ -1,0 +1,49 @@
+# pgAdmin pour YunoHost
+
+[![Niveau d'intégration](https://dash.yunohost.org/integration/pgadmin.svg)](https://dash.yunohost.org/appci/app/pgadmin) ![](https://ci-apps.yunohost.org/ci/badges/pgadmin.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/pgadmin.maintain.svg)  
+[![Installer pgAdmin avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=pgadmin)
+
+*[Read this readme in english.](./README.md)*
+*[Lire ce readme en français.](./README_fr.md)*
+
+> *Ce package vous permet d'installer pgAdmin rapidement et simplement sur un serveur YunoHost.
+Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l'installer et en profiter.*
+
+## Vue d'ensemble
+
+pgAdmin is a feature rich Open Source administration and development platform for PostgreSQL.
+
+
+**Version incluse :** 4-5.7~ynh1
+
+
+
+## Captures d'écran
+
+![](./doc/screenshots/pgadmin4-welcome-light.png)
+
+## Avertissements / informations importantes
+
+### Multi-users support
+
+This app actually don't support the SSO and don't support LDAP. After the install of the app you can create a other user. So this app is multi-users but independently of the LDAP database.
+
+## Documentations et ressources
+
+* Site officiel de l'app : https://www.pgadmin.org
+* Documentation officielle de l'admin : https://www.pgadmin.org/docs
+* Documentation YunoHost pour cette app : https://yunohost.org/app_pgadmin
+* Signaler un bug : https://github.com/YunoHost-Apps/pgadmin_ynh/issues
+
+## Informations pour les développeurs
+
+Merci de faire vos pull request sur la [branche testing](https://github.com/YunoHost-Apps/pgadmin_ynh/tree/testing).
+
+Pour essayer la branche testing, procédez comme suit.
+```
+sudo yunohost app install https://github.com/YunoHost-Apps/pgadmin_ynh/tree/testing --debug
+ou
+sudo yunohost app upgrade pgadmin -u https://github.com/YunoHost-Apps/pgadmin_ynh/tree/testing --debug
+```
+
+**Plus d'infos sur le packaging d'applications :** https://yunohost.org/packaging_apps

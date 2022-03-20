@@ -2,11 +2,10 @@
 # SET ALL CONSTANTS
 #=================================================
 
-app=$YNH_APP_INSTANCE_NAME
-final_path=/opt/yunohost/$app
-pgadmin_user="$app"
 python_version="$(python3 -V | cut -d' ' -f2 | cut -d. -f1-2)"
-dependances="python3-pip build-essential python3-dev python3-venv postgresql uwsgi uwsgi-plugin-python3 expect libpq-dev libkrb5-dev"
+
+# dependencies used by the app
+pkg_dependencies="python3-pip build-essential python3-dev python3-venv postgresql uwsgi uwsgi-plugin-python3 expect libpq-dev libkrb5-dev"
 
 #=================================================
 # DEFINE ALL COMMON FONCTIONS
@@ -61,6 +60,7 @@ install_source() {
         set -$u_arg;
         pip3 install --upgrade pip
         pip3 install --upgrade 'Werkzeug<1.0'
+        pip3 install --upgrade 'markupsafe==2.0.1'
         pip3 install --upgrade pgadmin$app_main_version==$app_sub_version
         set +$u_arg;
         deactivate
@@ -72,6 +72,7 @@ set_permission() {
     # Set permission
     chown $pgadmin_user:root -R $final_path
     chown $pgadmin_user:root -R /var/lib/pgadmin
+    mkdir -p /var/log/pgadmin
     chown $pgadmin_user:root -R /var/log/pgadmin
     chown $pgadmin_user:root /var/log/uwsgi/$app
     chown $pgadmin_user:root /etc/uwsgi/apps-available/$app.ini
