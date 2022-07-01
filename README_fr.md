@@ -18,7 +18,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 pgAdmin is a feature rich Open Source administration and development platform for PostgreSQL.
 
 
-**Version incluse :** 4-6.9~ynh1
+**Version incluse :** 4-6.11~ynh1
 
 ## Captures d'écran
 
