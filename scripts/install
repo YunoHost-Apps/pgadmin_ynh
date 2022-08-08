@@ -32,7 +32,6 @@ admin_pwd=$YNH_APP_ARG_PASSWORD
 db_user="pgadmin"
 db_pwd=$(ynh_string_random --length 30)
 app_version=$(ynh_app_upstream_version)
-app_main_version=$(echo $app_version | cut -d'-' -f1)
 app_sub_version=$(echo $app_version | cut -d'-' -f2)
 
 app=$YNH_APP_INSTANCE_NAME
