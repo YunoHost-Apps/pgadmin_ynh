@@ -20,7 +20,6 @@ pgAdmin is a feature rich Open Source administration and development platform fo
 
 **Shipped version:** 6.12~ynh1
 
-
 ## Screenshots
 
 ![Screenshot of pgAdmin4](./doc/screenshots/pgadmin4-welcome-light.png)
