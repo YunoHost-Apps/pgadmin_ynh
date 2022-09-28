@@ -36,7 +36,6 @@ db_user=$(ynh_app_setting_get --app=$app --key=db_user)
 db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
 
 app_version=$(ynh_app_upstream_version)
-app_main_version=$(echo $app_version | cut -d'-' -f1)
 app_sub_version=$(echo $app_version | cut -d'-' -f2)
 
 pgadmin_user="$app"

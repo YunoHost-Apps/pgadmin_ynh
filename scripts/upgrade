@@ -23,7 +23,6 @@ admin=$(ynh_app_setting_get --app=$app --key=admin)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 
 app_version=$(ynh_app_upstream_version)
-app_main_version=$(echo $app_version | cut -d'-' -f1)
 app_sub_version=$(echo $app_version | cut -d'-' -f2)
 
 pgadmin_user="$app"
