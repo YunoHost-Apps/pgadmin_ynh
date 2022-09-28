@@ -12,7 +12,6 @@
 		setup_private=0
 		setup_public=0
 		upgrade=1
-		upgrade=1	from_commit=bc3aa0261bb20a3d0a8c4d48d68fe66a67bea527
 		backup_restore=1
 		multi_instance=0
 		port_already_use=0
@@ -21,5 +20,3 @@
 Email=
 Notification=none
 ;;; Upgrade options
-    ; commit=bc3aa0261bb20a3d0a8c4d48d68fe66a67bea527
-        name=Before apply exemple (branch old_version_for_CI_1)
