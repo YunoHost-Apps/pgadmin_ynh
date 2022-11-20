@@ -6,7 +6,7 @@
         "en": "Manage PostgreSQL databases over the web",
         "fr": "Application web de gestion des bases de données PostgreSQL"
     },
-    "version": "6.15~ynh1",
+    "version": "6.16~ynh1",
     "url": "https://www.pgadmin.org",
     "upstream": {
         "license": "PostgreSQL",
