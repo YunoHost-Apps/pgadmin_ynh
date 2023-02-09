@@ -59,9 +59,12 @@ install_source() {
         source $final_path/bin/activate
         set -$u_arg;
         pip3 install --upgrade pip
-        pip3 install --upgrade 'Werkzeug<1.0'
-        pip3 install --upgrade 'markupsafe==2.0.1'
-        pip3 install --upgrade pgadmin4==$app_sub_version
+
+        temp_requirement=$(mktemp)
+        cp $YNH_APP_BASEDIR/conf/requirement_$(lsb_release --codename --short).txt $temp_requirement
+        chown $pgadmin_user:root $temp_requirement
+
+        sudo -u $pgadmin_user env PATH=$PATH pip3 install --upgrade -r $temp_requirement
         set +$u_arg;
         deactivate
         set -$u_arg;
