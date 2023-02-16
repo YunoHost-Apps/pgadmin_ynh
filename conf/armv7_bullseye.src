@@ -1,5 +1,5 @@
-SOURCE_URL=https://github.com/Josue-T/pgadmin_python_build/releases/download/v4-6.19/pgadmin_4-6.19-bullseye-bin1_armv7l.tar.gz
-SOURCE_SUM=3685a8db6be03fe2f626b3d3336f0d7fe80c790f1d2477c22cc03891ea06d0b8
+SOURCE_URL=https://github.com/Josue-T/pgadmin_python_build/releases/download/v4-6.20/pgadmin_4-6.20-bullseye-bin1_armv7l.tar.gz
+SOURCE_SUM=f297edfb4f77ae1d13eb67be5013f31309b21b61526329093e12981ccc837069
 # (Optional) Program to check the integrity (sha256sum, md5sum...)
 # default: sha256
 SOURCE_SUM_PRG=sha256sum
