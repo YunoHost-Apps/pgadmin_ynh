@@ -23,17 +23,17 @@ crypted_password = crypto.encrypt(password, user_encrypted_password)
 
 # Declare database data to put in database
 data = {'id': 1,'user_id': 1, 'servergroup_id' : 1, 'name': 'Yunohost Server', 'host': 'localhost', 'port': 5432,'maintenance_db':'postgres','username':username,
-    'ssl_mode':'prefer', 'comment' : '', 'password' :crypted_password,'role':'', 'discovery_id':'', 'hostaddr':'','db_res':'','passfile':'',
+    'comment' : '', 'password' :crypted_password,'role':'', 'discovery_id':'', 'hostaddr':'','db_res':'','passfile':'',
     'sslcert' :'','sslkey':'','sslrootcert':'','sslcrl':''}
 
 # Insert new data in database
 cursor = conn.cursor()
 cursor.execute('''INSERT INTO `server`(
             `id`,`user_id`,`servergroup_id`,`name`,`host`,`port`,`maintenance_db`,`username`,
-            `ssl_mode`,`comment`,`password`,`role`,`discovery_id`,`hostaddr`,`db_res`,`passfile`,`sslcert`,`sslkey`,`sslrootcert`,`sslcrl`
+            `comment`,`password`,`role`,`discovery_id`,`hostaddr`,`db_res`,`passfile`,`sslcert`,`sslkey`,`sslrootcert`,`sslcrl`
         ) VALUES(
             :id,:user_id,:servergroup_id,:name,:host,:port,:maintenance_db,:username,
-            :ssl_mode,:comment,:password,:role,:discovery_id,:hostaddr,:db_res,:passfile,:sslcert,:sslkey,:sslrootcert,:sslcrl
+            :comment,:password,:role,:discovery_id,:hostaddr,:db_res,:passfile,:sslcert,:sslkey,:sslrootcert,:sslcrl
         )''', data)
 conn.commit()
 
