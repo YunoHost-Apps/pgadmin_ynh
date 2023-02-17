@@ -63,6 +63,7 @@ install_source() {
         temp_requirement=$(mktemp)
         cp $YNH_APP_BASEDIR/conf/requirement_$(lsb_release --codename --short).txt $temp_requirement
         chown $pgadmin_user:root $temp_requirement
+        chown $pgadmin_user:root -R $final_path
 
         sudo -u $pgadmin_user env PATH=$PATH pip3 install --upgrade -r $temp_requirement
         set +$u_arg;
