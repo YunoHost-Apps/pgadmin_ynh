@@ -58,7 +58,7 @@ install_source() {
         set +$u_arg;
         source $final_path/bin/activate
         set -$u_arg;
-        pip3 install --upgrade pip
+        pip3 install --upgrade pip wheel
 
         temp_requirement=$(mktemp)
         cp $YNH_APP_BASEDIR/conf/requirement_$(lsb_release --codename --short).txt $temp_requirement
