@@ -1,5 +1,5 @@
-SOURCE_URL=https://github.com/Josue-T/pgadmin_python_build/releases/download/v4-6.20/pgadmin_4-6.20-bookworm-bin1_armv7l.tar.gz
-SOURCE_SUM=834162a17c7fd9f001d774635f23101e598c8da367b3fa32640fb3ccae0230b9
+SOURCE_URL=https://github.com/Josue-T/pgadmin_python_build/releases/download/v4-6.21/pgadmin_4-6.21-bookworm-bin1_armv7l.tar.gz
+SOURCE_SUM=fe2bc4974bd5831f6307d6eb2ec099f95ce2de36456aac2a1760fe85bf4a97d7
 # (Optional) Program to check the integrity (sha256sum, md5sum...)
 # default: sha256
 SOURCE_SUM_PRG=sha256sum
