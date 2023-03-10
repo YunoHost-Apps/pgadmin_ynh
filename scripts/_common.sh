@@ -41,15 +41,6 @@ install_source() {
         ynh_secure_remove --file=$final_path/share
         ynh_setup_source --dest_dir $final_path/ --source_id "armv7_$(lsb_release --codename --short)"
     else
-        # Install rustup is not already installed
-        # We need this to be able to install cryptgraphy
-        export PATH="$PATH:$final_path/.cargo/bin:$final_path/.local/bin:/usr/local/sbin"
-        if [ -e $final_path/.rustup ]; then
-            sudo -u "$pgadmin_user" env PATH=$PATH rustup update
-        else
-            sudo -u "$pgadmin_user" bash -c 'curl -sSf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y --default-toolchain=stable --profile=minimal'
-        fi
-
 # 		Install virtualenv if it don't exist
         test -e $final_path/bin/python3 || python3 -m venv $final_path
 
@@ -59,13 +50,7 @@ install_source() {
         source $final_path/bin/activate
         set -$u_arg;
         pip3 install --upgrade pip wheel
-
-        temp_requirement=$(mktemp)
-        cp $YNH_APP_BASEDIR/conf/requirement_$(lsb_release --codename --short).txt $temp_requirement
-        chown $pgadmin_user:root $temp_requirement
-        chown $pgadmin_user:root -R $final_path
-
-        sudo -u $pgadmin_user env PATH=$PATH pip3 install --upgrade -r $temp_requirement
+        pip3 install --upgrade -r $YNH_APP_BASEDIR/conf/requirement_$(lsb_release --codename --short).txt
         set +$u_arg;
         deactivate
         set -$u_arg;
