@@ -34,7 +34,7 @@ data = {'id': 1, 'user_id': 1, 'servergroup_id': 1, 'name': 'Yunohost Server', '
 # Insert new data in database
 cursor = conn.cursor()
 cursor.execute('''
-    `server` (
+    INSERT INTO `server` (
         `id`,`user_id`,`servergroup_id`,`name`,`host`,`port`,`maintenance_db`,
         `username`,`comment`,`password`,`role`,`discovery_id`,
         `db_res`,`bgcolor`,`fgcolor`,`service`,
@@ -48,7 +48,7 @@ cursor.execute('''
         :use_ssh_tunnel,:tunnel_host,:tunnel_port,:tunnel_username,:tunnel_authentication,:tunnel_identity_file,:tunnel_password,
         :save_password,:shared,:kerberos_conn,:cloud_status,:passexec_cmd,:passexec_expiration,
         :connection_params
-        )''', data)
+        );''', data)
 conn.commit()
 
 # Close connection
