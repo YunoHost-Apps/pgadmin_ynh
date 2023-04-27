@@ -50,6 +50,7 @@ install_source() {
         source $final_path/bin/activate
         set -$u_arg;
         pip3 install --upgrade pip wheel
+        pip3 install -I --upgrade "psycopg[c]"
         pip3 install --upgrade -r $YNH_APP_BASEDIR/conf/requirement_$(lsb_release --codename --short).txt
         set +$u_arg;
         deactivate
