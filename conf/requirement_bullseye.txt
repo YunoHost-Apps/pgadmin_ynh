@@ -11,8 +11,8 @@ Babel==2.12.1
 bcrypt==4.0.1
 bidict==0.22.1
 blinker==1.6.2
-boto3==1.26.147
-botocore==1.29.147
+boto3==1.26.148
+botocore==1.29.148
 Brotli==1.0.9
 cachetools==5.3.1
 certifi==2023.5.7
@@ -64,7 +64,7 @@ msrest==0.7.1
 oauthlib==3.2.2
 paramiko==3.2.0
 passlib==1.7.4
-pgadmin4 @ file:///home/app_upgrader/pgadmin4-7.2-py3-none-any.whl#sha256=89d97e5c6567ba61dd9949ec1991924fdd773d09f58c557ddd20267830d7e09b
+pgadmin4 @ file:///home/app_upgrader/pgadmin4-7.3-py3-none-any.whl#sha256=972457d668607ca09ec1a408e38fb3b312dabff76814b004cfffa352276e53bb
 Pillow==9.5.0
 pkg_resources==0.0.0
 portalocker==2.7.0
@@ -85,7 +85,7 @@ python-engineio==4.4.1
 python-socketio==5.8.0
 pytz==2023.3
 qrcode==7.4.2
-requests==2.28.2
+requests==2.31.0
 requests-oauthlib==1.3.1
 rsa==4.9
 s3transfer==0.6.1
