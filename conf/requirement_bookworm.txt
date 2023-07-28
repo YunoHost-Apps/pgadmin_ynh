@@ -64,7 +64,7 @@ msrest==0.7.1
 oauthlib==3.2.2
 paramiko==3.2.0
 passlib==1.7.4
-pgadmin4 @ file:///root/pgadmin4-7.5-py3-none-any.whl#sha256=d734934b655ea662ff9bae35bf79c997db532a28e4ff06d98b0fc4b2eb379ceb
+pgadmin4==7.5
 Pillow==9.5.0
 portalocker==2.7.0
 protobuf==4.23.4

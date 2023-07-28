@@ -64,7 +64,7 @@ msrest==0.7.1
 oauthlib==3.2.2
 paramiko==3.2.0
 passlib==1.7.4
-pgadmin4 @ file:///home/app_upgrader/pgadmin4-7.5-py3-none-any.whl#sha256=f2364df1112c77710be346a53419c98992e9be0f3af1786957e4981a3955635c
+pgadmin4==7.5
 Pillow==9.5.0
 pkg_resources==0.0.0
 portalocker==2.7.0
