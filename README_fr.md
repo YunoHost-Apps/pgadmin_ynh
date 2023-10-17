@@ -19,7 +19,7 @@ Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) po
 pgAdmin is a feature rich Open Source administration and development platform for PostgreSQL.
 
 
-**Version incluse :** 7.6~ynh1
+**Version incluse :** 7.7~ynh1
 
 ## Captures d’écran
 
@@ -35,7 +35,6 @@ This app actually don't support the SSO and don't support LDAP. After the instal
 
 * Site officiel de l’app : <https://www.pgadmin.org>
 * Documentation officielle de l’admin : <https://www.pgadmin.org/docs>
-* Documentation YunoHost pour cette app : <https://yunohost.org/app_pgadmin>
 * Signaler un bug : <https://github.com/YunoHost-Apps/pgadmin_ynh/issues>
 
 ## Informations pour les développeurs
