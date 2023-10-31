@@ -35,6 +35,7 @@ This app actually don't support the SSO and don't support LDAP. After the instal
 
 * Official app website: <https://www.pgadmin.org>
 * Official admin documentation: <https://www.pgadmin.org/docs>
+* YunoHost Store: <https://apps.yunohost.org/app/pgadmin>
 * Report a bug: <https://github.com/YunoHost-Apps/pgadmin_ynh/issues>
 
 ## Developer info
