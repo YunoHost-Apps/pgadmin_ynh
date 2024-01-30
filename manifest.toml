@@ -35,6 +35,10 @@ ram.runtime = "200M"
     type = "path"
     default = "/pgadmin"
 
+    [install.init_main_permission]
+    type = "group"
+    default = "admins"
+
     [install.admin]
     type = "user"
 
