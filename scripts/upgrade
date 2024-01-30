@@ -69,7 +69,7 @@ ynh_script_progression --message="Upgrading system configurations related to $ap
 ynh_add_nginx_config
 
 # Config uwsgi
-ynh_add_uwsgi_service
+ynh_add_uwsgi_service "python_version"
 
 # Use logrotate to manage app-specific logfile(s)
 ynh_use_logrotate --logfile /var/log/pgadmin --nonappend

@@ -35,7 +35,7 @@ ynh_change_url_nginx_config
 ynh_script_progression --message="Updating configuration..."
 
 # Update UWSGI Config
-ynh_add_uwsgi_service
+ynh_add_uwsgi_service "python_version"
 
 #=================================================
 # GENERIC FINALISATION
