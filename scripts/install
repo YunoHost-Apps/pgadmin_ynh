@@ -10,6 +10,10 @@ source experimental_helper.sh
 source _common.sh
 source /usr/share/yunohost/helpers
 
+#=================================================
+# INITIALIZE AND STORE SETTINGS
+#=================================================
+
 email=$(ynh_user_get_info --username $admin --key 'mail')
 
 #=================================================
@@ -19,8 +23,10 @@ ynh_script_progression --message="Setting up source files..."
 
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_script_progression --message="Installing sources files..." --weight=10
+
 setup_dir
-install_source
+
+_install_pgadmin_venv
 
 #=================================================
 # SPECIFIC SETUP
@@ -41,10 +47,10 @@ ynh_script_progression --message="Configuring sqlite database..."
 # initialisation sqlite database for pgadmin
 chmod +x ../conf/setup.exp
 set +u;
-source $install_dir/bin/activate
+source $install_dir/venv/bin/activate
 set -u;
 ynh_replace_special_string --match_string "__ADMIN_PASSWORD__" --replace_string "$password" --target_file "../conf/setup.exp"
-../conf/setup.exp "$install_dir/bin/python3" "$install_dir/lib/python$python_version/site-packages/pgadmin4/setup.py" "$email"
+../conf/setup.exp "$install_dir/venv/bin/python3" "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/setup.py" "$email"
 
 # POPULATE THE DATABASE
 ynh_script_progression --message="Configuring Postgresql database..."
@@ -53,7 +59,7 @@ ynh_psql_execute_as_root \
     --sql "CREATE USER ${db_user} WITH PASSWORD '${db_pwd}' SUPERUSER CREATEDB CREATEROLE REPLICATION"
 
 # Add Server In PGadmin database
-$install_dir/bin/python3 config_database.py "$db_user" "$db_pwd"
+$install_dir/venv/bin/python3 config_database.py "$db_user" "$db_pwd"
 set +u;
 deactivate
 set -u;

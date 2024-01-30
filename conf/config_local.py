@@ -1,1 +1,1 @@
-DESKTOP_USER = '__USER__@__DOMAIN__'
+DESKTOP_USER = '__APP__@__DOMAIN__'
