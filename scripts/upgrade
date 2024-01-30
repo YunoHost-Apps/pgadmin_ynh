@@ -11,52 +11,15 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# LOAD SETTINGS
-#=================================================
-#REMOVEME? ynh_script_progression --message="Loading installation settings..."
-
-#REMOVEME? app=$YNH_APP_INSTANCE_NAME
-
-#REMOVEME? domain=$(ynh_app_setting_get --app=$app --key=domain)
-#REMOVEME? path=$(ynh_app_setting_get --app=$app --key=path)
-#REMOVEME? admin=$(ynh_app_setting_get --app=$app --key=admin)
-#REMOVEME? #REMOVEME? install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
-
-app_version=$(ynh_app_upstream_version)
-app_sub_version=$(echo $app_version | cut -d'-' -f2)
-
-
-#=================================================
-# CHECK VERSION
-#=================================================
-ynh_script_progression --message="Checking version..."
-
-upgrade_type=$(ynh_check_app_version_changed)
-
-#=================================================
-# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
-#=================================================
-#REMOVEME? ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."
-
-# Backup the current version of the app
-#REMOVEME? ynh_backup_before_upgrade
-#REMOVEME? ynh_clean_setup () {
-	ynh_clean_check_starting
-	# Restore it if the upgrade fails
-#REMOVEME? 	ynh_restore_upgradebackup
-}
-# Exit if an error occurs during the execution of the script
-#REMOVEME? ynh_abort_if_errors
-
-#=================================================
 # STANDARD UPGRADE STEPS
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
 ynh_script_progression --message="Stopping a systemd service..."
 
-test -e /etc/uwsgi/apps-available/$app.ini && \
+if [ -f "/etc/uwsgi/apps-available/$app.ini" ]; then
     ynh_systemd_action --service_name "uwsgi-app@$app.service" --action stop
+fi
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
@@ -67,20 +30,8 @@ if ! grep -q "$install_dir" /etc/passwd; then
     sed --in-place -r "s@$app\:x\:([[:digit:]]+\:[[:digit:]]+)\:\:/.*/$app\:/usr/sbin/nologin@$app\:x\:\1\:\:$install_dir\:/usr/sbin/nologin@g" /etc/passwd
 fi
 
-#=================================================
-# NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Upgrading NGINX web server configuration..."
-
-# Create a dedicated NGINX config
-ynh_add_nginx_config
-
-#=================================================
-# UPGRADE DEPENDENCIES
-#=================================================
-#REMOVEME? ynh_script_progression --message="Upgrading dependencies..."
-
-#REMOVEME? ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
+# Clean old uwsgi config
+ynh_secure_remove /etc/uwsgi/apps-enabled/pgadmin.ini
 
 #=================================================
 # SPECIFIC UPGRADE
@@ -95,22 +46,20 @@ install_source
 ynh_script_progression --message="Configuring application..."
 config_pgadmin
 
-# Config uwsgi
-ynh_add_uwsgi_service
-
-# Clean old uwsgi config
-ynh_secure_remove /etc/uwsgi/apps-enabled/pgadmin.ini
-
 # Set permission after initialisation
 ynh_script_progression --message="Protecting directory..."
 set_permission
 
 #=================================================
-# GENERIC FINALIZATION
+# REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
-# SETUP LOGROTATE
-#=================================================
-ynh_script_progression --message="Upgrading logrotate configuration..."
+ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
+
+# Create a dedicated NGINX config
+ynh_add_nginx_config
+
+# Config uwsgi
+ynh_add_uwsgi_service
 
 # Use logrotate to manage app-specific logfile(s)
 ynh_use_logrotate --logfile /var/log/pgadmin --nonappend
@@ -122,13 +71,6 @@ ynh_script_progression --message="Starting a systemd service..." --weight=3
 
 ynh_systemd_action --service_name "uwsgi-app@$app.service" --action="restart" --line_match "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
 sleep 10
-
-#=================================================
-# RELOAD NGINX
-#=================================================
-#REMOVEME? ynh_script_progression --message="Reloading NGINX web server..."
-
-#REMOVEME? ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT

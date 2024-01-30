@@ -28,7 +28,7 @@ chown -R "$app:www-data" "$install_dir"
 #=================================================
 ynh_script_progression --message="Restoring the Postgresql superuser..." --weight=1
 
-ynh_psql_execute_as_root --sql "CREATE USER ${db_user} WITH PASSWORD '${db_pwd}' SUPERUSER CREATEDB CREATEROLE REPLICATION"
+ynh_psql_execute_as_root --sql "CREATE USER $db_user WITH PASSWORD '$db_pwd' SUPERUSER CREATEDB CREATEROLE REPLICATION"
 
 #=================================================
 # REINSTALL DEPENDENCIES
@@ -64,21 +64,16 @@ ynh_script_progression --message="Protecting directory..."
 set_permission
 
 #=================================================
-# START SYSTEMD SERVICE
-#=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=3
-
-ynh_systemd_action --service_name "uwsgi-app@$app.service" --action="restart" --line_match "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
-
-#=================================================
 # GENERIC FINALIZATION
 #=================================================
-# RELOAD NGINX
+# RELOAD NGINX AND PHP-FPM OR THE APP SERVICE
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server..."
+ynh_script_progression --message="Reloading NGINX web server and $app's service..." --weight=1
+
+ynh_systemd_action --service_name "uwsgi-app@$app.service" --action="restart" --line_match "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
+sleep 10
 
 ynh_systemd_action --service_name=nginx --action=reload
-sleep 10
 
 #=================================================
 # END OF SCRIPT
