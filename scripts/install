@@ -20,8 +20,9 @@ email=$(ynh_user_get_info --username $admin --key 'mail')
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Setting up source files..."
+ynh_install_venv
 
-_install_pgadmin_venv
+_install_pgadmin_pip
 
 setup_dir
 
