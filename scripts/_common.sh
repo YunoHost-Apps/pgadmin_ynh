@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 #=================================================
 # SET ALL CONSTANTS
 #=================================================
@@ -19,15 +21,15 @@ setup_dir() {
 }
 
 install_source() {
-    # Clean venv is it was on python with an old version in case major upgrade of debian
-    if [ ! -e $install_dir/lib/python$python_version ]; then
-#REMOVEME?         ynh_secure_remove --file=$install_dir/bin
-#REMOVEME?         ynh_secure_remove --file=$install_dir/lib
-#REMOVEME?         ynh_secure_remove --file=$install_dir/lib64
-#REMOVEME?         ynh_secure_remove --file=$install_dir/include
-#REMOVEME?         ynh_secure_remove --file=$install_dir/share
-#REMOVEME?         ynh_secure_remove --file=$install_dir/pyvenv.cfg
-    fi
+#     # Clean venv is it was on python with an old version in case major upgrade of debian
+#     if [ ! -e $install_dir/lib/python$python_version ]; then
+# #REMOVEME?         ynh_secure_remove --file=$install_dir/bin
+# #REMOVEME?         ynh_secure_remove --file=$install_dir/lib
+# #REMOVEME?         ynh_secure_remove --file=$install_dir/lib64
+# #REMOVEME?         ynh_secure_remove --file=$install_dir/include
+# #REMOVEME?         ynh_secure_remove --file=$install_dir/share
+# #REMOVEME?         ynh_secure_remove --file=$install_dir/pyvenv.cfg
+#     fi
 
     mkdir -p $install_dir
     chown $app:root -R $install_dir
