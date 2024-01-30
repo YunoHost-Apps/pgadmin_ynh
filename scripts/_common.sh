@@ -44,7 +44,7 @@ install_source() {
         ynh_setup_source --dest_dir $install_dir/ --source_id "armv7_$(lsb_release --codename --short)"
     else
 # 		Install virtualenv if it don't exist
-#REMOVEME?         test -e $install_dir/bin/python3 || python3 -m venv $install_dir
+        test -e $install_dir/bin/python3 || python3 -m venv $install_dir
 
 # 		Install pgadmin in virtualenv
         u_arg='u'
