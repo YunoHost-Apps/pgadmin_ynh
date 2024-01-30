@@ -28,13 +28,6 @@ ynh_remove_logrotate
 ynh_remove_nginx_config
 
 #=================================================
-# CONFIGURE POSTGRESQL
-#=================================================
-ynh_script_progression --message="Removing the Postgresql superuser..."
-
-ynh_psql_drop_user "$db_user"
-
-#=================================================
 # SPECIFIC REMOVE
 #=================================================
 # REMOVE VARIOUS FILES

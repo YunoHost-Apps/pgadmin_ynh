@@ -26,9 +26,8 @@ fi
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..."
 
-if ! grep -q "$install_dir" /etc/passwd; then
-    sed --in-place -r "s@$app\:x\:([[:digit:]]+\:[[:digit:]]+)\:\:/.*/$app\:/usr/sbin/nologin@$app\:x\:\1\:\:$install_dir\:/usr/sbin/nologin@g" /etc/passwd
-fi
+# Set the proper home directory
+usermod -d "$install_dir" "$app"
 
 # Clean old uwsgi config
 ynh_secure_remove /etc/uwsgi/apps-enabled/pgadmin.ini
