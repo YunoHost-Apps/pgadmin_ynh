@@ -41,7 +41,7 @@ chmod +x ../conf/setup.exp
 set +u;
 source $install_dir/bin/activate
 set -u;
-ynh_replace_special_string --match_string "__ADMIN_PASSWORD__" --replace_string "$admin_pwd" --target_file "../conf/setup.exp"
+ynh_replace_special_string --match_string "__ADMIN_PASSWORD__" --replace_string "$password" --target_file "../conf/setup.exp"
 ../conf/setup.exp "$install_dir/bin/python3" "$install_dir/lib/python$python_version/site-packages/pgadmin4/setup.py" "$email"
 
 # POPULATE THE DATABASE
