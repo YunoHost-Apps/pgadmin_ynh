@@ -137,7 +137,7 @@ ynh_restore_uwsgi_service () {
     chown $app:root /var/log/uwsgi/$app
     chmod -R u=rwX,g=rX,o= /var/log/uwsgi/$app
 
-    yunohost service add "uwsgi-app@$app" --log "/var/log/uwsgi/$app/$app.log"
+    yunohost service add "uwsgi-app@$app" --log "/var/log/uwsgi/$app/$app.log"  --description="UWSGI service for $app"
 }
 
 #=================================================
