@@ -42,16 +42,6 @@ ram.runtime = "50M" # FIXME: replace with an **estimate** minimum ram requiremen
     type = "password"
 
 [resources]
-    [resources.sources]
-    # [resources.sources.armv7_bullseye]
-    # url = "https://github.com/Josue-T/pgadmin_python_build/releases/download/v4-7.7/pgadmin_4-7.7-bullseye-bin1_armv7l.tar.gz"
-    # sha256 = "76022eeab9c985a30dab8b24027db095f74eb491077de01db77100e320b4a2e5"
-
-    # [resources.sources.armv7_bookworm]
-    # url = "https://github.com/Josue-T/pgadmin_python_build/releases/download/v4-7.7/pgadmin_4-7.7-bookworm-bin1_armv7l.tar.gz"
-    # sha256 = "e18206853ced73eb1922182c5a3c825d8af21d5e40fcd607311cc4e075a28e72"
-
-
     [resources.system_user]
 
     [resources.install_dir]
