@@ -27,7 +27,8 @@ chown -R "$app:www-data" "$install_dir"
 # RESTORE THE POSTGRESQL SUPERUSER
 #=================================================
 ynh_script_progression --message="Restoring the Postgresql superuser..." --weight=1
-ynh_psql_execute_as_root --sql "ALTER USER $db_user WITH SUPERUSER CREATEDB CREATEROLE REPLICATION"
+password=$(cat hashed_password.txt)
+ynh_psql_execute_as_root --sql "ALTER USER $app WITH PASSWORD '$password' SUPERUSER CREATEDB CREATEROLE REPLICATION"
 
 #=================================================
 # REINSTALL DEPENDENCIES

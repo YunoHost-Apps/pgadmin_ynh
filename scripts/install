@@ -44,12 +44,13 @@ chmod +x "$install_dir/setup.exp"
 # Postgresql superuser
 #=================================================
 ynh_script_progression --message="Configuring Postgresql superuser..."
-ynh_psql_execute_as_root --sql "ALTER USER $app WITH SUPERUSER CREATEDB CREATEROLE REPLICATION"
+# We overwrite the existing db_pwd
+ynh_psql_execute_as_root --sql "ALTER USER $app WITH PASSWORD '$password' SUPERUSER CREATEDB CREATEROLE REPLICATION"
 
 # Add Server In PGadmin database
 ynh_add_config --template="setup_database.py" --destination "$install_dir/setup_database.py"
 chmod +x "$install_dir/setup_database.py"
-"$install_dir/venv/bin/python3" "$install_dir/setup_database.py" "$db_user" "$db_pwd"
+"$install_dir/venv/bin/python3" "$install_dir/setup_database.py" "$db_user" "$password"
 
 # Set permission after initialisation
 ynh_script_progression --message="Protecting directory"
