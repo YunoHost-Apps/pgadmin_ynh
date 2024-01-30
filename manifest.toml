@@ -19,7 +19,7 @@ cpe = "cpe:2.3:a:pgadmin:pgadmin"
 
 [integration]
 yunohost = ">= 11.0.11"
-architectures = ["arm64"]
+architectures = "all"
 multi_instance = false
 ldap = false
 sso = false
