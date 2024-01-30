@@ -46,9 +46,7 @@ ynh_script_progression --message="Configuring sqlite database..."
 
 # initialisation sqlite database for pgadmin
 chmod +x ../conf/setup.exp
-set +u;
-source $install_dir/venv/bin/activate
-set -u;
+
 ynh_replace_special_string --match_string "__ADMIN_PASSWORD__" --replace_string "$password" --target_file "../conf/setup.exp"
 ../conf/setup.exp "$install_dir/venv/bin/python3" "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/setup.py" "$email"
 
@@ -60,9 +58,6 @@ ynh_psql_execute_as_root \
 
 # Add Server In PGadmin database
 $install_dir/venv/bin/python3 config_database.py "$db_user" "$db_pwd"
-set +u;
-deactivate
-set -u;
 
 # Set permission after initialisation
 ynh_script_progression --message="Protecting directory"
