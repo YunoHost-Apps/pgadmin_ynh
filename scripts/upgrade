@@ -13,19 +13,18 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_script_progression --message="Loading installation settings..."
+#REMOVEME? ynh_script_progression --message="Loading installation settings..."
 
-app=$YNH_APP_INSTANCE_NAME
+#REMOVEME? app=$YNH_APP_INSTANCE_NAME
 
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-path_url=$(ynh_app_setting_get --app=$app --key=path)
-admin=$(ynh_app_setting_get --app=$app --key=admin)
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+#REMOVEME? domain=$(ynh_app_setting_get --app=$app --key=domain)
+#REMOVEME? path=$(ynh_app_setting_get --app=$app --key=path)
+#REMOVEME? admin=$(ynh_app_setting_get --app=$app --key=admin)
+#REMOVEME? #REMOVEME? install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
 
 app_version=$(ynh_app_upstream_version)
 app_sub_version=$(echo $app_version | cut -d'-' -f2)
 
-pgadmin_user="$app"
 
 #=================================================
 # CHECK VERSION
@@ -37,17 +36,17 @@ upgrade_type=$(ynh_check_app_version_changed)
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
-ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."
+#REMOVEME? ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."
 
 # Backup the current version of the app
-ynh_backup_before_upgrade
-ynh_clean_setup () {
+#REMOVEME? ynh_backup_before_upgrade
+#REMOVEME? ynh_clean_setup () {
 	ynh_clean_check_starting
 	# Restore it if the upgrade fails
-	ynh_restore_upgradebackup
+#REMOVEME? 	ynh_restore_upgradebackup
 }
 # Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
+#REMOVEME? ynh_abort_if_errors
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -64,8 +63,8 @@ test -e /etc/uwsgi/apps-available/$app.ini && \
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..."
 
-if ! grep -q "$final_path" /etc/passwd; then
-    sed --in-place -r "s@$app\:x\:([[:digit:]]+\:[[:digit:]]+)\:\:/.*/$app\:/usr/sbin/nologin@$app\:x\:\1\:\:$final_path\:/usr/sbin/nologin@g" /etc/passwd
+if ! grep -q "$install_dir" /etc/passwd; then
+    sed --in-place -r "s@$app\:x\:([[:digit:]]+\:[[:digit:]]+)\:\:/.*/$app\:/usr/sbin/nologin@$app\:x\:\1\:\:$install_dir\:/usr/sbin/nologin@g" /etc/passwd
 fi
 
 #=================================================
@@ -79,9 +78,9 @@ ynh_add_nginx_config
 #=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Upgrading dependencies..."
+#REMOVEME? ynh_script_progression --message="Upgrading dependencies..."
 
-ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
+#REMOVEME? ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
 # SPECIFIC UPGRADE
@@ -97,7 +96,7 @@ ynh_script_progression --message="Configuring application..."
 config_pgadmin
 
 # Config uwsgi
-ynh_add_uwsgi_service 'pgadmin_user python_version'
+ynh_add_uwsgi_service
 
 # Clean old uwsgi config
 ynh_secure_remove /etc/uwsgi/apps-enabled/pgadmin.ini
@@ -127,9 +126,9 @@ sleep 10
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server..."
+#REMOVEME? ynh_script_progression --message="Reloading NGINX web server..."
 
-ynh_systemd_action --service_name=nginx --action=reload
+#REMOVEME? ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT

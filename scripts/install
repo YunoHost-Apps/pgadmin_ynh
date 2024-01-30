@@ -11,98 +11,14 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# MANAGE SCRIPT FAILURE
-#=================================================
-
-ynh_clean_setup () {
-	ynh_clean_check_starting
-}
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
-
-#=================================================
-# RETRIEVE ARGUMENTS FROM THE MANIFEST
-#=================================================
-
-domain=$YNH_APP_ARG_DOMAIN
-path_url=$YNH_APP_ARG_PATH
-admin=$YNH_APP_ARG_ADMIN
-admin_pwd=$YNH_APP_ARG_PASSWORD
-
-db_user="pgadmin"
-db_pwd=$(ynh_string_random --length 30)
-app_version=$(ynh_app_upstream_version)
-app_sub_version=$(echo $app_version | cut -d'-' -f2)
-
-app=$YNH_APP_INSTANCE_NAME
-
-pgadmin_user="$app"
-
-#=================================================
-# CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
-#=================================================
-ynh_script_progression --message="Validating installation parameters..."
-
-final_path=/opt/yunohost/$app
-test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
-
-# Register (book) web path
-ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
-
-# Get user email and check that the user exist
-email=$(ynh_user_get_info --username $admin --key 'mail')
-if [[ -z $email ]]
-then
-    ynh_die --message "Can't get user email, check that the user exist or that the user have an email"
-fi
-
-#=================================================
-# STORE SETTINGS FROM MANIFEST
-#=================================================
-ynh_script_progression --message="Storing installation settings..."
-
-ynh_app_setting_set --app=$app --key=domain --value=$domain
-ynh_app_setting_set --app=$app --key=path --value=$path_url
-ynh_app_setting_set --app=$app --key=admin --value=$admin
-ynh_app_setting_set --app=$app --key=admin_pwd --value="$admin_pwd"
-ynh_app_setting_set --app=$app --key=db_user --value="$db_user"
-ynh_app_setting_set --app=$app --key=db_pwd --value="$db_pwd"
-
-#=================================================
-# STANDARD MODIFICATIONS
-#=================================================
-# INSTALL DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Installing dependencies..." --weight=7
-
-ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
-
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Configuring system user..."
-
-# Create a system user
-ynh_system_user_create --username=$pgadmin_user --home_dir=$final_path
-
-#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Setting up source files..."
 
-ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_script_progression --message="Installing sources files..." --weight=10
 setup_dir
 install_source
-
-#=================================================
-# NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Configuring NGINX web server..."
-
-# Create a dedicated NGINX config
-ynh_add_nginx_config
 
 #=================================================
 # SPECIFIC SETUP
@@ -116,26 +32,26 @@ ynh_script_progression --message="Configuring application..."
 config_pgadmin
 
 # Config uwsgi
-ynh_add_uwsgi_service 'pgadmin_user python_version'
+ynh_add_uwsgi_service
 
 ynh_script_progression --message="Configuring sqlite database..."
 
 # initialisation sqlite database for pgadmin
 chmod +x ../conf/setup.exp
 set +u;
-source $final_path/bin/activate
+source $install_dir/bin/activate
 set -u;
 ynh_replace_special_string --match_string "__ADMIN_PASSWORD__" --replace_string "$admin_pwd" --target_file "../conf/setup.exp"
-../conf/setup.exp "$final_path/bin/python3" "$final_path/lib/python$python_version/site-packages/pgadmin4/setup.py" "$email"
+../conf/setup.exp "$install_dir/bin/python3" "$install_dir/lib/python$python_version/site-packages/pgadmin4/setup.py" "$email"
 
 # POPULATE THE DATABASE
 ynh_script_progression --message="Configuring Postgresql database..."
-ynh_psql_test_if_first_run
+#REMOVEME? ynh_psql_test_if_first_run
 ynh_psql_execute_as_root \
     --sql "CREATE USER ${db_user} WITH PASSWORD '${db_pwd}' SUPERUSER CREATEDB CREATEROLE REPLICATION"
 
 # Add Server In PGadmin database
-$final_path/bin/python3 config_database.py "$db_user" "$db_pwd"
+$install_dir/bin/python3 config_database.py "$db_user" "$db_pwd"
 set +u;
 deactivate
 set -u;
@@ -145,11 +61,12 @@ ynh_script_progression --message="Protecting directory"
 set_permission
 
 #=================================================
-# GENERIC FINALIZATION
+# SYSTEM CONFIGURATION
 #=================================================
-# SETUP LOGROTATE
-#=================================================
-ynh_script_progression --message="Configuring log rotation..."
+ynh_script_progression --message="Adding system configurations related to $app..." --weight=1
+
+# Create a dedicated NGINX config
+ynh_add_nginx_config
 
 ynh_use_logrotate --logfile="/var/log/pgadmin"
 
@@ -160,21 +77,6 @@ ynh_script_progression --message="Starting a systemd service..." --weight=3
 
 ynh_systemd_action --service_name "uwsgi-app@$app.service" --action="restart" --line_match "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
 sleep 10
-
-#=================================================
-# SETUP SSOWAT
-#=================================================
-ynh_script_progression --message="Configuring permissions..."
-
-# Restrict access to admin only
-ynh_permission_update --permission="main" --remove="all_users" --add=$admin
-
-#=================================================
-# RELOAD NGINX
-#=================================================
-ynh_script_progression --message="Reloading NGINX web server..."
-
-ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT
