@@ -34,7 +34,7 @@ ynh_script_progression --message="Configuring application..."
 config_pgadmin
 
 # Config uwsgi
-ynh_add_uwsgi_service
+ynh_add_uwsgi_service "python_version"
 
 ynh_script_progression --message="Configuring sqlite database..."
 
