@@ -21,43 +21,32 @@ email=$(ynh_user_get_info --username $admin --key 'mail')
 #=================================================
 ynh_script_progression --message="Setting up source files..."
 
-# Download, check integrity, uncompress and patch the source from app.src
-ynh_script_progression --message="Installing sources files..." --weight=10
+_install_pgadmin_venv
 
 setup_dir
 
-_install_pgadmin_venv
-
 #=================================================
-# SPECIFIC SETUP
+# ADD A CONFIGURATION
 #=================================================
-# ...
-#=================================================
-
-ynh_script_progression --message="Configuring application..."
+ynh_script_progression --message="Adding a configuration file..." --weight=1
 
 # CONFIGURE PGADMIN
-config_pgadmin
+ynh_add_config --template="config_local.py" --destination="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/config_local.py"
 
-# Config uwsgi
-ynh_add_uwsgi_service "python_version"
+ynh_script_progression --message="Configuring $app..."
 
-ynh_script_progression --message="Configuring sqlite database..."
+ynh_add_config --template="setup.exp" --destination="$install_dir/setup.exp"
+"$install_dir/setup.exp" "$install_dir/venv/bin/python3" "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/setup.py" "$email"
 
-# initialisation sqlite database for pgadmin
-chmod +x ../conf/setup.exp
-
-ynh_replace_special_string --match_string "__ADMIN_PASSWORD__" --replace_string "$password" --target_file "../conf/setup.exp"
-../conf/setup.exp "$install_dir/venv/bin/python3" "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/setup.py" "$email"
-
-# POPULATE THE DATABASE
-ynh_script_progression --message="Configuring Postgresql database..."
-#REMOVEME? ynh_psql_test_if_first_run
-ynh_psql_execute_as_root \
-    --sql "CREATE USER ${db_user} WITH PASSWORD '${db_pwd}' SUPERUSER CREATEDB CREATEROLE REPLICATION"
+#=================================================
+# Postgresql superuser
+#=================================================
+ynh_script_progression --message="Configuring Postgresql superuser..."
+ynh_psql_execute_as_root --sql "CREATE USER $db_user WITH PASSWORD '$db_pwd' SUPERUSER CREATEDB CREATEROLE REPLICATION"
 
 # Add Server In PGadmin database
-$install_dir/venv/bin/python3 config_database.py "$db_user" "$db_pwd"
+ynh_add_config --template="setup_database.py" --destination "$install_dir/setup_database.py"
+"$install_dir/venv/bin/python3" "$install_dir/setup_database.py" "$db_user" "$db_pwd"
 
 # Set permission after initialisation
 ynh_script_progression --message="Protecting directory"
@@ -70,6 +59,9 @@ ynh_script_progression --message="Adding system configurations related to $app..
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
+
+# Config uwsgi
+ynh_add_uwsgi_service "python_version"
 
 ynh_use_logrotate --logfile="/var/log/pgadmin"
 

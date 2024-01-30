@@ -37,7 +37,3 @@ _install_pgadmin_venv() {
     cp "$YNH_APP_BASEDIR/conf/requirement_$(lsb_release --codename --short).txt" "$install_dir/requirements.txt"
     ynh_exec_as "$app" "$venvpy" -m pip install --upgrade -r "$install_dir/requirements.txt"
 }
-
-config_pgadmin() {
-    ynh_add_config --template="config_local.py" --destination="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/config_local.py"
-}

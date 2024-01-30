@@ -11,11 +11,11 @@ expect "Email address:"
 send "$user\r";
 
 expect "Password:"
-send {__ADMIN_PASSWORD__};
+send {__PASSWORD__};
 send "\r";
 
 expect "Retype password:"
-send {__ADMIN_PASSWORD__};
+send {__PASSWORD__};
 send "\r";
 
 interact
