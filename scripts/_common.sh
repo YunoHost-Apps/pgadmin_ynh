@@ -43,6 +43,6 @@ _install_pgadmin_pip() {
     # ynh_exec_as "$app" "$venvpy" -m pip install --upgrade --no-cache-dir --ignore-installed "psycopg[c]"
 
     # cp "$YNH_APP_BASEDIR/conf/requirement_$(lsb_release --codename --short).txt" "$install_dir/requirements.txt"
-    cp "$YNH_APP_BASEDIR/conf/requirement_orig.txt" "$install_dir/requirements.txt"
+    cp "$YNH_APP_BASEDIR/conf/requirements_orig.txt" "$install_dir/requirements.txt"
     ynh_exec_as "$app" "$venvpy" -m pip install --upgrade -r "$install_dir/requirements.txt"
 }
