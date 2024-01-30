@@ -6,7 +6,7 @@ import sys
 
 # Import crypto from pgadmin project __PYTHON_VERSION__
 python_version = str(sys.version_info[0]) + "." + str(sys.version_info[1])
-crypto = SourceFileLoader('crypto', '/opt/yunohost/pgadmin/lib/python' +
+crypto = SourceFileLoader('crypto', '/var/www/pgadmin/lib/python' +
                           python_version + '/site-packages/pgadmin4/pgadmin/utils/crypto.py').load_module()
 
 # Get arguments
