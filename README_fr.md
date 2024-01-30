@@ -25,12 +25,6 @@ pgAdmin is a feature rich Open Source administration and development platform fo
 
 ![Capture d’écran de pgAdmin4](./doc/screenshots/pgadmin4-welcome-light.png)
 
-## Avertissements / informations importantes
-
-### Multi-users support
-
-This app actually don't support the SSO and don't support LDAP. After the install of the app you can create a other user. So this app is multi-users but independently of the LDAP database.
-
 ## Documentations et ressources
 
 * Site officiel de l’app : <https://www.pgadmin.org>
