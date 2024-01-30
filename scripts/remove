@@ -11,19 +11,9 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# LOAD SETTINGS
+# REMOVE SYSTEM CONFIGURATIONS
 #=================================================
-#REMOVEME? ynh_script_progression --message="Loading installation settings..."
-
-#REMOVEME? app=$YNH_APP_INSTANCE_NAME
-
-#REMOVEME? domain=$(ynh_app_setting_get --app=$app --key=domain)
-#REMOVEME? db_user=$(ynh_app_setting_get --app=$app --key=db_user)
-#REMOVEME? #REMOVEME? install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
-
-#=================================================
-# STANDARD REMOVE
-#=================================================
+ynh_script_progression --message="Removing system configurations related to $app..." --weight=1
 
 # Stop service
 ynh_systemd_action --service_name "uwsgi-app@$app.service" --action stop
@@ -31,44 +21,18 @@ ynh_systemd_action --service_name "uwsgi-app@$app.service" --action stop
 # Remove uwsgi config
 ynh_remove_uwsgi_service
 
-#=================================================
-# REMOVE LOGROTATE CONFIGURATION
-#=================================================
-ynh_script_progression --message="Removing logrotate configuration..."
-
 # Remove the app-specific logrotate config
 ynh_remove_logrotate
-
-#=================================================
-# REMOVE DB_USER
-#=================================================
-#REMOVEME? ynh_script_progression --message="Cleaning the PostgreSQL database..."
-
-ynh_psql_drop_user $db_user
-
-#=================================================
-# REMOVE APP MAIN DIR
-#=================================================
-#REMOVEME? ynh_script_progression --message="Removing app main directory..." --weight=4
-
-# Remove the app directory securely
-#REMOVEME? ynh_secure_remove --file="$install_dir"
-
-#=================================================
-# REMOVE NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Removing NGINX web server configuration..."
 
 # Remove the dedicated NGINX config
 ynh_remove_nginx_config
 
 #=================================================
-# REMOVE DEPENDENCIES
+# CONFIGURE POSTGRESQL
 #=================================================
-#REMOVEME? ynh_script_progression --message="Removing dependencies..." --weight=10
+ynh_script_progression --message="Removing the Postgresql superuser..."
 
-# Remove metapackage and its dependencies
-#REMOVEME? ynh_remove_app_dependencies || true
+ynh_psql_drop_user "$db_user"
 
 #=================================================
 # SPECIFIC REMOVE
@@ -83,15 +47,8 @@ ynh_secure_remove --file="/var/lib/$app"
 # Remove the log files
 ynh_secure_remove --file="/var/log/$app"
 
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-# REMOVE DEDICATED USER
-#=================================================
-#REMOVEME? ynh_script_progression --message="Removing the dedicated system user..."
-
-# Delete a system user
-#REMOVEME? ynh_system_user_delete --username=$app
+# Remove the log files
+ynh_secure_remove --file="/var/log/uwsgi/$app"
 
 #=================================================
 # END OF SCRIPT
