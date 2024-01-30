@@ -109,7 +109,7 @@ ynh_add_uwsgi_service () {
     systemctl enable "uwsgi-app@$app.service"
 
     # Add as a service
-    yunohost service add "uwsgi-app@$app" --log "/var/log/uwsgi/$app/$app.log"
+    yunohost service add "uwsgi-app@$app" --log "/var/log/uwsgi/$app/$app.log" --description="UWSGI service for $app"
 }
 
 # Remove the dedicated uwsgi ini file
