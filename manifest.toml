@@ -23,7 +23,7 @@ architectures = "all"
 multi_instance = false
 ldap = false
 sso = false
-disk = "50M" # FIXME: replace with an **estimate** minimum disk requirement. e.g. 20M, 400M, 1G, ...
+disk = "100M"
 ram.build = "300M"
 ram.runtime = "200M"
 
