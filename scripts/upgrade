@@ -47,8 +47,6 @@ setup_dir
 #=================================================
 ynh_script_progression --message="Updating a configuration file..." --weight=1
 
-config_pgadmin
-
 # CONFIGURE PGADMIN
 ynh_add_config --template="config_local.py" --destination="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/config_local.py"
 
