@@ -11,19 +11,9 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# LOAD SETTINGS
+# REMOVE SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression --message="Loading installation settings..."
-
-app=$YNH_APP_INSTANCE_NAME
-
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-db_user=$(ynh_app_setting_get --app=$app --key=db_user)
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-
-#=================================================
-# STANDARD REMOVE
-#=================================================
+ynh_script_progression --message="Removing system configurations related to $app..." --weight=1
 
 # Stop service
 ynh_systemd_action --service_name "uwsgi-app@$app.service" --action stop
@@ -31,44 +21,11 @@ ynh_systemd_action --service_name "uwsgi-app@$app.service" --action stop
 # Remove uwsgi config
 ynh_remove_uwsgi_service
 
-#=================================================
-# REMOVE LOGROTATE CONFIGURATION
-#=================================================
-ynh_script_progression --message="Removing logrotate configuration..."
-
 # Remove the app-specific logrotate config
 ynh_remove_logrotate
 
-#=================================================
-# REMOVE DB_USER
-#=================================================
-ynh_script_progression --message="Cleaning the PostgreSQL database..."
-
-ynh_psql_drop_user $db_user
-
-#=================================================
-# REMOVE APP MAIN DIR
-#=================================================
-ynh_script_progression --message="Removing app main directory..." --weight=4
-
-# Remove the app directory securely
-ynh_secure_remove --file="$final_path"
-
-#=================================================
-# REMOVE NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Removing NGINX web server configuration..."
-
 # Remove the dedicated NGINX config
 ynh_remove_nginx_config
-
-#=================================================
-# REMOVE DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Removing dependencies..." --weight=10
-
-# Remove metapackage and its dependencies
-ynh_remove_app_dependencies || true
 
 #=================================================
 # SPECIFIC REMOVE
@@ -83,15 +40,8 @@ ynh_secure_remove --file="/var/lib/$app"
 # Remove the log files
 ynh_secure_remove --file="/var/log/$app"
 
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-# REMOVE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Removing the dedicated system user..."
-
-# Delete a system user
-ynh_system_user_delete --username=$app
+# Remove the log files
+ynh_secure_remove --file="/var/log/uwsgi/$app"
 
 #=================================================
 # END OF SCRIPT

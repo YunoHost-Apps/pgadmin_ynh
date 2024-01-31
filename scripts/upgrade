@@ -11,110 +11,72 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# LOAD SETTINGS
-#=================================================
-ynh_script_progression --message="Loading installation settings..."
-
-app=$YNH_APP_INSTANCE_NAME
-
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-path_url=$(ynh_app_setting_get --app=$app --key=path)
-admin=$(ynh_app_setting_get --app=$app --key=admin)
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-
-app_version=$(ynh_app_upstream_version)
-app_sub_version=$(echo $app_version | cut -d'-' -f2)
-
-pgadmin_user="$app"
-
-#=================================================
-# CHECK VERSION
-#=================================================
-ynh_script_progression --message="Checking version..."
-
-upgrade_type=$(ynh_check_app_version_changed)
-
-#=================================================
-# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
-#=================================================
-ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."
-
-# Backup the current version of the app
-ynh_backup_before_upgrade
-ynh_clean_setup () {
-	ynh_clean_check_starting
-	# Restore it if the upgrade fails
-	ynh_restore_upgradebackup
-}
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
-
-#=================================================
 # STANDARD UPGRADE STEPS
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
 ynh_script_progression --message="Stopping a systemd service..."
 
-test -e /etc/uwsgi/apps-available/$app.ini && \
+if [ -f "/etc/uwsgi/apps-available/$app.ini" ]; then
     ynh_systemd_action --service_name "uwsgi-app@$app.service" --action stop
+fi
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..."
 
-if ! grep -q "$final_path" /etc/passwd; then
-    sed --in-place -r "s@$app\:x\:([[:digit:]]+\:[[:digit:]]+)\:\:/.*/$app\:/usr/sbin/nologin@$app\:x\:\1\:\:$final_path\:/usr/sbin/nologin@g" /etc/passwd
-fi
-
-#=================================================
-# NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Upgrading NGINX web server configuration..."
-
-# Create a dedicated NGINX config
-ynh_add_nginx_config
-
-#=================================================
-# UPGRADE DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Upgrading dependencies..."
-
-ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
-
-#=================================================
-# SPECIFIC UPGRADE
-#=================================================
-# ...
-#=================================================
-# Download, check integrity, uncompress and patch the source from app.src
-ynh_script_progression --message="Upgrading source files..." --weight=6
-install_source
-
-# CONFIGURE PGADMIN
-ynh_script_progression --message="Configuring application..."
-config_pgadmin
-
-# Config uwsgi
-ynh_add_uwsgi_service 'pgadmin_user python_version'
+# Set the proper home directory
+usermod -d "$install_dir" "$app"
 
 # Clean old uwsgi config
 ynh_secure_remove /etc/uwsgi/apps-enabled/pgadmin.ini
 
-# Set permission after initialisation
-ynh_script_progression --message="Protecting directory..."
-set_permission
+#=================================================
+# Postgresql superuser
+#=================================================
+ynh_script_progression --message="Configuring Postgresql superuser..."
+
+# Re-set the db_pwd just in case…
+ynh_psql_execute_as_root --sql "ALTER USER $app WITH PASSWORD '$db_pwd' SUPERUSER CREATEDB CREATEROLE REPLICATION"
 
 #=================================================
-# GENERIC FINALIZATION
+# DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-# SETUP LOGROTATE
+ynh_script_progression --message="Upgrading source files..." --weight=6
+ynh_install_venv
+
+_install_pgadmin_pip
+
+chown -R "$app:root" "$install_dir"
+
+mkdir -p /var/lib/pgadmin
+chmod -R 750 /var/lib/pgadmin
+chown -R "$app:root" /var/lib/pgadmin
+
 #=================================================
-ynh_script_progression --message="Upgrading logrotate configuration..."
+# UPDATE A CONFIG FILE
+#=================================================
+ynh_script_progression --message="Updating a configuration file..." --weight=1
+
+# CONFIGURE PGADMIN
+ynh_add_config --template="config_local.py" --destination="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/config_local.py"
+chown -R "$app:root" "$install_dir"
+
+#=================================================
+# REAPPLY SYSTEM CONFIGURATIONS
+#=================================================
+ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
+
+# Create a dedicated NGINX config
+ynh_add_nginx_config
+
+# Config uwsgi
+ynh_add_uwsgi_service "python_version"
 
 # Use logrotate to manage app-specific logfile(s)
 ynh_use_logrotate --logfile /var/log/pgadmin --nonappend
+chown -R "$app:root" /var/log/pgadmin
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -123,13 +85,6 @@ ynh_script_progression --message="Starting a systemd service..." --weight=3
 
 ynh_systemd_action --service_name "uwsgi-app@$app.service" --action="restart" --line_match "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
 sleep 10
-
-#=================================================
-# RELOAD NGINX
-#=================================================
-ynh_script_progression --message="Reloading NGINX web server..."
-
-ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT
