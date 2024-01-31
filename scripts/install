@@ -20,14 +20,14 @@ email=$(ynh_user_get_info --username $admin --key 'mail')
 #=================================================
 # Postgresql superuser
 #=================================================
-ynh_script_progression --message="Configuring Postgresql superuser..."
+ynh_script_progression --message="Configuring Postgresql superuser..." --weight 1
 
 ynh_psql_execute_as_root --sql "ALTER USER $db_user WITH SUPERUSER CREATEDB CREATEROLE REPLICATION"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Setting up source files..."
+ynh_script_progression --message="Setting up source files..." --weight=5
 ynh_install_venv
 
 _install_pgadmin_pip
@@ -46,7 +46,7 @@ ynh_script_progression --message="Configuring pgAdmin..." --weight=1
 ynh_add_config --template="config_local.py" --destination="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/config_local.py"
 chown -R "$app:root" "$install_dir"
 
-ynh_add_config --template="setup.exp" --destination="$install_dir/setup.exp"
+ynh_add_config --template="setup.exp" --destination="$install_dir/setup.exp" --weight=2
 chmod +x "$install_dir/setup.exp"
 ynh_exec_as "$app" "$install_dir/setup.exp" "$install_dir/venv/bin/python3" "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/setup.py" setup-db
 

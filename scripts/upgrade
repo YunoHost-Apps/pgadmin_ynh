@@ -15,7 +15,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Stopping a systemd service..."
+ynh_script_progression --message="Stopping a systemd service..." --weight=1
 
 if [ -f "/etc/uwsgi/apps-available/$app.ini" ]; then
     ynh_systemd_action --service_name "uwsgi-app@$app.service" --action stop
@@ -24,7 +24,7 @@ fi
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
-ynh_script_progression --message="Ensuring downward compatibility..."
+ynh_script_progression --message="Ensuring downward compatibility..." --weight=2
 
 # Set the proper home directory
 usermod -d "$install_dir" "$app"
@@ -39,11 +39,10 @@ if [ -d "/var/lib/pgadmin" ]; then
     ynh_secure_remove "/var/lib/pgadmin"
 fi
 
-
 #=================================================
 # Postgresql superuser
 #=================================================
-ynh_script_progression --message="Configuring Postgresql superuser..."
+ynh_script_progression --message="Configuring Postgresql superuser..." --weight=1
 
 # Re-set the db_pwd just in case…
 ynh_psql_execute_as_root --sql "ALTER USER $app WITH PASSWORD '$db_pwd' SUPERUSER CREATEDB CREATEROLE REPLICATION"

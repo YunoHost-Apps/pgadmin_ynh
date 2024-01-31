@@ -23,7 +23,7 @@ ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="stop" --log
 #=================================================
 # MODIFY URL IN NGINX CONF
 #=================================================
-ynh_script_progression --message="Updating NGINX web server configuration..."
+ynh_script_progression --message="Updating NGINX web server configuration..." --weight=1
 
 ynh_change_url_nginx_config
 
@@ -32,7 +32,7 @@ ynh_change_url_nginx_config
 #=================================================
 # UPDATE CONFIGURATION
 #=================================================
-ynh_script_progression --message="Updating configuration..."
+ynh_script_progression --message="Updating configuration..." --weight=1
 
 # Update UWSGI Config
 ynh_add_uwsgi_service "python_version"

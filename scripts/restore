@@ -48,7 +48,7 @@ ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 #=================================================
 # RESTORE VARIOUS FILES
 #=================================================
-ynh_script_progression --message="Restoring various files..."
+ynh_script_progression --message="Restoring various files..." --weight=1
 
 ynh_restore_file --origin_path="/var/log/$app/"
 chmod -R 750 /var/log/pgadmin
@@ -56,7 +56,7 @@ chown -R "$app:root" /var/log/pgadmin
 
 
 # Restore systemd configuration
-ynh_script_progression --message="Reconfiguring application..."
+ynh_script_progression --message="Reconfiguring application..." --weight=1
 ynh_restore_uwsgi_service
 
 #=================================================
