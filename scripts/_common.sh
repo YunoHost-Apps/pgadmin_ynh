@@ -25,5 +25,6 @@ ynh_use_venv() {
 }
 
 _install_pgadmin_pip() {
-    ynh_exec_as "$app" "$venvpy" -m pip install --upgrade "pgadmin4==7.7"
+    version=$(ynh_app_upstream_version)
+    ynh_exec_as "$app" "$venvpy" -m pip install --upgrade "pgadmin4==$version"
 }
