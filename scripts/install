@@ -22,7 +22,7 @@ email=$(ynh_user_get_info --username $admin --key 'mail')
 #=================================================
 ynh_script_progression --message="Configuring Postgresql superuser..."
 
-ynh_psql_execute_as_root --sql "ALTER USER $app WITH SUPERUSER CREATEDB CREATEROLE REPLICATION"
+ynh_psql_execute_as_root --sql "ALTER USER $db_user WITH SUPERUSER CREATEDB CREATEROLE REPLICATION"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -55,6 +55,9 @@ ynh_exec_as "$app" "$install_dir/setup.exp" "$install_dir/venv/bin/python3" "$in
 
 ynh_add_config --template="server.json" --destination="$install_dir/server.json"
 ynh_exec_as "$app" "$install_dir/venv/bin/python3" "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/setup.py" --user "$email" --load-servers "$install_dir/server.json"
+
+# looks like we need to run one command as pgadmin to get access to the dbs ?
+ynh_psql_connect_as --user="$db_user" --password="$db_pwd" <<< '\list;' >/dev/null
 
 #=================================================
 # SYSTEM CONFIGURATION
