@@ -1,4 +1,4 @@
-The Postgresql admin user credentials:
+Although you usually don't need them, here are the Postgresql admin user credentials:
 
 Username: __DB_USER__
 Password: __DB_PWD__
