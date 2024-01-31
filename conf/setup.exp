@@ -3,12 +3,11 @@ set timeout 20
 
 set cmd [lindex $argv 0]
 set path [lindex $argv 1]
-set user [lindex $argv 2]
 
 spawn $cmd $path
 
 expect "Email address:"
-send "$user\r";
+send "__EMAIL__\r";
 
 expect "Password:"
 send {__PASSWORD__};
