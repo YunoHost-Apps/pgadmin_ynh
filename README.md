@@ -19,17 +19,11 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 pgAdmin is a feature rich Open Source administration and development platform for PostgreSQL.
 
 
-**Shipped version:** 7.7~ynh1
+**Shipped version:** 8.2~ynh2
 
 ## Screenshots
 
 ![Screenshot of pgAdmin4](./doc/screenshots/pgadmin4-welcome-light.png)
-
-## Disclaimers / important information
-
-### Multi-users support
-
-This app actually don't support the SSO and don't support LDAP. After the install of the app you can create a other user. So this app is multi-users but independently of the LDAP database.
 
 ## Documentation and resources
 

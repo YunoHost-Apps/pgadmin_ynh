@@ -43,7 +43,7 @@ EOF
 #
 #   __APP__       by  $app
 #   __PATH__      by  $path_url
-#   __FINALPATH__ by  $final_path
+#   __FINALPATH__ by  $install_dir
 #
 #  And dynamic variables (from the last example) :
 #   __PATH_2__    by $path_2
@@ -51,7 +51,7 @@ EOF
 #
 # To be able to customise the settings of the systemd unit you can override the rules with the file "conf/uwsgi-app@override.service".
 # This file will be automatically placed on the good place
-# 
+#
 # Note that the service need to be started manually at the end of the installation.
 # Generally you can start the service with this command:
 # ynh_systemd_action --service_name "uwsgi-app@$app.service" --line_match "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
@@ -73,8 +73,8 @@ ynh_add_uwsgi_service () {
 
     # To avoid a break by set -u, use a void substitution ${var:-}. If the variable is not set, it's simply set with an empty variable.
     # Substitute in a nginx config file only if the variable is not empty
-    if test -n "${final_path:-}"; then
-        ynh_replace_string --match_string="__FINALPATH__" --replace_string="$final_path" --target_file="$finaluwsgiini"
+    if test -n "${install_dir:-}"; then
+        ynh_replace_string --match_string="__INSTALL_DIR__" --replace_string="$install_dir" --target_file="$finaluwsgiini"
     fi
     if test -n "${path_url:-}"; then
         ynh_replace_string --match_string="__PATH__" --replace_string="$path_url" --target_file="$finaluwsgiini"
@@ -87,7 +87,7 @@ ynh_add_uwsgi_service () {
     for var_to_replace in $others_var
     do
         # ${var_to_replace^^} make the content of the variable on upper-cases
-        # ${!var_to_replace} get the content of the variable named $var_to_replace 
+        # ${!var_to_replace} get the content of the variable named $var_to_replace
         ynh_replace_string --match_string="__${var_to_replace^^}__" --replace_string="${!var_to_replace}" --target_file="$finaluwsgiini"
     done
 
@@ -109,7 +109,7 @@ ynh_add_uwsgi_service () {
     systemctl enable "uwsgi-app@$app.service"
 
     # Add as a service
-    yunohost service add "uwsgi-app@$app" --log "/var/log/uwsgi/$app/$app.log"
+    yunohost service add "uwsgi-app@$app" --log "/var/log/uwsgi/$app/$app.log" --description="UWSGI service for $app"
 }
 
 # Remove the dedicated uwsgi ini file
@@ -136,8 +136,8 @@ ynh_restore_uwsgi_service () {
     mkdir -p /var/log/uwsgi/$app
     chown $app:root /var/log/uwsgi/$app
     chmod -R u=rwX,g=rX,o= /var/log/uwsgi/$app
-    
-    yunohost service add "uwsgi-app@$app" --log "/var/log/uwsgi/$app/$app.log"
+
+    yunohost service add "uwsgi-app@$app" --log "/var/log/uwsgi/$app/$app.log"  --description="UWSGI service for $app"
 }
 
 #=================================================
