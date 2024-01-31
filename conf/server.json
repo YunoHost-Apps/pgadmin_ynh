@@ -1,0 +1,25 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "YunoHost Server",
+            "Group": "Server Group 1",
+            "Host": "localhost",
+            "Port": 5432,
+            "Username": "__DB_USER__",
+            "Role": "__DB_USER__",
+            "MaintenanceDB": "postgres",
+
+            "SSLMode": "prefer",
+            "SSLCert": "<STORAGE_DIR>/.postgresql/postgresql.crt",
+            "SSLKey": "<STORAGE_DIR>/.postgresql/postgresql.key",
+
+            "Timeout": 10,
+
+            "DBRestriction": "live_db test_db",
+            "PassFile": "/path/to/pgpassfile",
+            "Shared": false,
+            "Service": "postgresql-10",
+            "PasswordExecCommand": "echo '__DB_PWD__'"
+        }
+    }
+}
