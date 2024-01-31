@@ -48,7 +48,11 @@ ynh_install_venv
 
 _install_pgadmin_pip
 
-setup_dir
+chown -R "$app:root" "$install_dir"
+
+mkdir -p /var/lib/pgadmin
+chmod -R 750 /var/lib/pgadmin
+chown -R "$app:root" /var/lib/pgadmin
 
 #=================================================
 # UPDATE A CONFIG FILE
@@ -57,8 +61,7 @@ ynh_script_progression --message="Updating a configuration file..." --weight=1
 
 # CONFIGURE PGADMIN
 ynh_add_config --template="config_local.py" --destination="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/config_local.py"
-
-set_permission
+chown -R "$app:root" "$install_dir"
 
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
@@ -73,6 +76,7 @@ ynh_add_uwsgi_service "python_version"
 
 # Use logrotate to manage app-specific logfile(s)
 ynh_use_logrotate --logfile /var/log/pgadmin --nonappend
+chown -R "$app:root" /var/log/pgadmin
 
 #=================================================
 # START SYSTEMD SERVICE

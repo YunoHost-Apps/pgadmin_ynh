@@ -32,7 +32,11 @@ ynh_install_venv
 
 _install_pgadmin_pip
 
-setup_dir
+chown -R "$app:root" "$install_dir"
+
+mkdir -p /var/lib/pgadmin
+chmod -R 750 /var/lib/pgadmin
+chown -R "$app:root" /var/lib/pgadmin
 
 #=================================================
 # ADD A CONFIGURATION
@@ -40,6 +44,7 @@ setup_dir
 ynh_script_progression --message="Configuring pgAdmin..." --weight=1
 
 ynh_add_config --template="config_local.py" --destination="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/config_local.py"
+chown -R "$app:root" "$install_dir"
 
 ynh_add_config --template="setup.exp" --destination="$install_dir/setup.exp"
 chmod +x "$install_dir/setup.exp"
@@ -47,10 +52,6 @@ ynh_exec_as "$app" "$install_dir/setup.exp" "$install_dir/venv/bin/python3" "$in
 
 ynh_add_config --template="server.json" --destination="$install_dir/server.json"
 ynh_exec_as "$app" "$install_dir/venv/bin/python3" "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/setup.py" --user "$email" --load-servers "$install_dir/server.json"
-
-# Set permission after initialisation
-ynh_script_progression --message="Protecting directory"
-set_permission
 
 #=================================================
 # SYSTEM CONFIGURATION
@@ -64,6 +65,7 @@ ynh_add_nginx_config
 ynh_add_uwsgi_service "python_version"
 
 ynh_use_logrotate --logfile="/var/log/pgadmin"
+chown -R "$app:root" /var/log/pgadmin
 
 #=================================================
 # START SYSTEMD SERVICE
