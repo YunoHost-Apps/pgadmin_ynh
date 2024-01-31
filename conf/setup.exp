@@ -2,9 +2,9 @@
 set timeout 20
 
 set cmd [lindex $argv 0]
-set path [lindex $argv 1]
+set arguments [lrange $argv 1 end]
 
-spawn $cmd $path
+spawn $cmd {*}$arguments
 
 expect "Email address:"
 send "__EMAIL__\r";
