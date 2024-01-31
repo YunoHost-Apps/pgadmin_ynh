@@ -8,7 +8,6 @@
             "MaintenanceDB": "postgres",
             "Username": "__DB_USER__",
             "Shared": false,
-            "DBRestriction": "live_db test_db",
             "KerberosAuthentication": false,
             "ConnectionParameters": {
                 "sslmode": "prefer",
