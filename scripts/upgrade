@@ -33,6 +33,14 @@ usermod -d "$install_dir" "$app"
 ynh_secure_remove /etc/uwsgi/apps-enabled/pgadmin.ini
 
 #=================================================
+# Postgresql superuser
+#=================================================
+ynh_script_progression --message="Configuring Postgresql superuser..."
+
+# Re-set the db_pwd just in case…
+ynh_psql_execute_as_root --sql "ALTER USER $app WITH PASSWORD '$db_pwd' SUPERUSER CREATEDB CREATEROLE REPLICATION"
+
+#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Upgrading source files..." --weight=6
@@ -51,12 +59,6 @@ ynh_script_progression --message="Updating a configuration file..." --weight=1
 ynh_add_config --template="config_local.py" --destination="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/config_local.py"
 
 set_permission
-
-#=================================================
-# Postgresql superuser
-#=================================================
-ynh_script_progression --message="Configuring Postgresql superuser..."
-ynh_psql_execute_as_root --sql "ALTER USER $app WITH SUPERUSER CREATEDB CREATEROLE REPLICATION"
 
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
