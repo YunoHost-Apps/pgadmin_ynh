@@ -7,7 +7,6 @@
             "Port": 5432,
             "MaintenanceDB": "postgres",
             "Username": "__DB_USER__",
-            "Role": "__DB_USER__",
             "Shared": false,
             "DBRestriction": "live_db test_db",
             "KerberosAuthentication": false,
