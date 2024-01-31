@@ -32,6 +32,14 @@ usermod -d "$install_dir" "$app"
 # Clean old uwsgi config
 ynh_secure_remove /etc/uwsgi/apps-enabled/pgadmin.ini
 
+if [ -d "/var/lib/pgadmin" ]; then
+    if [ ! -d "$install_dir/data" ]; then
+        mv "/var/lib/pgadmin" "$install_dir/data"
+    fi
+    ynh_secure_remove "/var/lib/pgadmin"
+fi
+
+
 #=================================================
 # Postgresql superuser
 #=================================================
@@ -49,10 +57,6 @@ ynh_install_venv
 _install_pgadmin_pip
 
 chown -R "$app:root" "$install_dir"
-
-mkdir -p /var/lib/pgadmin
-chmod -R 750 /var/lib/pgadmin
-chown -R "$app:root" /var/lib/pgadmin
 
 #=================================================
 # UPDATE A CONFIG FILE

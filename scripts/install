@@ -31,12 +31,9 @@ ynh_script_progression --message="Setting up source files..."
 ynh_install_venv
 
 _install_pgadmin_pip
+mkdir -p "$install_dir/data"
 
 chown -R "$app:root" "$install_dir"
-
-mkdir -p /var/lib/pgadmin
-chmod -R 750 /var/lib/pgadmin
-chown -R "$app:root" /var/lib/pgadmin
 
 mkdir -p /var/log/pgadmin
 chown -R "$app:root" /var/log/pgadmin

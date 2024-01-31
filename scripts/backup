@@ -36,8 +36,6 @@ ynh_backup --src_path="/etc/uwsgi/apps-available/$app.ini"
 # BACKUP VARIOUS FILES
 #=================================================
 
-ynh_backup --src_path="/var/lib/pgadmin"
-
 # Backup hashed password
 ynh_psql_execute_as_root --sql="SELECT rolpassword FROM pg_authid WHERE rolname='$app';" | head -3 | tail -1 > hashed_password.txt
 
