@@ -54,7 +54,7 @@ ynh_add_config --template="server.json" --destination="$install_dir/server.json"
 ynh_exec_as "$app" "$install_dir/venv/bin/python3" "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/setup.py" --user "$email" --load-servers "$install_dir/server.json"
 
 # looks like we need to run one command as pgadmin to get access to the dbs ?
-ynh_psql_connect_as --user="$db_user" --password="$db_pwd" <<< '\list;' >/dev/null
+ynh_psql_connect_as --user="$db_user" --password="$db_pwd" <<< '\list' >/dev/null
 
 #=================================================
 # SYSTEM CONFIGURATION
