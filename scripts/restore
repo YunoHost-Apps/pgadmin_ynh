@@ -50,10 +50,6 @@ ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 #=================================================
 ynh_script_progression --message="Restoring various files..."
 
-ynh_restore_file --origin_path="/var/lib/pgadmin"
-chmod -R 750 /var/lib/pgadmin
-chown -R "$app:root" /var/lib/pgadmin
-
 ynh_restore_file --origin_path="/var/log/$app/"
 chmod -R 750 /var/log/pgadmin
 chown -R "$app:root" /var/log/pgadmin
