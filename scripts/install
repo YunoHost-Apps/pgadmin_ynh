@@ -38,6 +38,9 @@ mkdir -p /var/lib/pgadmin
 chmod -R 750 /var/lib/pgadmin
 chown -R "$app:root" /var/lib/pgadmin
 
+mkdir -p /var/log/pgadmin
+chown -R "$app:root" /var/log/pgadmin
+
 #=================================================
 # ADD A CONFIGURATION
 #=================================================
