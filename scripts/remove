@@ -16,10 +16,9 @@ source /usr/share/yunohost/helpers
 ynh_script_progression --message="Removing system configurations related to $app..." --weight=1
 
 # Stop service
-ynh_systemd_action --service_name "uwsgi-app@$app.service" --action stop
-
-# Remove uwsgi config
-ynh_remove_uwsgi_service
+ynh_systemd_action --service_name "$app.service" --action stop
+ynh_remove_systemd_config --service=$app
+yunohost service remove $app
 
 # Remove the app-specific logrotate config
 ynh_remove_logrotate
@@ -36,9 +35,6 @@ ynh_script_progression --message="Removing various files..." --weight=1
 
 # Remove the log files
 ynh_secure_remove --file="/var/log/$app"
-
-# Remove the log files
-ynh_secure_remove --file="/var/log/uwsgi/$app"
 
 #=================================================
 # END OF SCRIPT
