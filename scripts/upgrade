@@ -19,6 +19,11 @@ ynh_script_progression --message="Stopping a systemd service..." --weight=1
 
 if [ -f "/etc/uwsgi/apps-available/$app.ini" ]; then
     ynh_systemd_action --service_name "uwsgi-app@$app.service" --action stop
+    systemctl disable "uwsgi-app@$app.service"
+    yunohost service remove "uwsgi-app@$app" || true
+
+    ynh_secure_remove --file="/etc/uwsgi/apps-available/$app.ini"
+    ynh_secure_remove --file="/etc/systemd/system/uwsgi-app@$app.service.d"
 else
     ynh_systemd_action --service_name "$app.service" --action stop
 fi
