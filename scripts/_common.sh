@@ -13,7 +13,7 @@ postgresql_version="$(psql -V | cut -d' ' -f3 | cut -d. -f1)"
 
 install_source() {
     # Clean venv is it was on python with an old version in case major upgrade of debian
-    if [ ! -e $install_dir/venv/lib/python$python_version ]; then
+    if [ ! -e $install_dir/venv/lib/python$python_version ] || ! grep -qF "$install_dir/venv/lib/python" "$install_dir"/venv/bin/pip; then
         ynh_secure_remove --file=$install_dir/venv/bin
         ynh_secure_remove --file=$install_dir/venv/lib
         ynh_secure_remove --file=$install_dir/venv/lib64
