@@ -1,0 +1,15 @@
+diff --git a/pgadmin/authenticate/webserver.py b/pgadmin/authenticate/webserver.py
+index 5a9e4533c..9693593dc 100644
+--- a/pgadmin/authenticate/webserver.py
++++ b/pgadmin/authenticate/webserver.py
+@@ -121,7 +121,9 @@ class WebserverAuthentication(BaseAuthentication):
+                 return create_user({
+                     'username': username,
+                     'email': useremail,
+-                    'role': 2,
++                    # BEGIN Yunohost Patch
++                    'role': 1,
++                    # END Yunohost Patch
+                     'active': True,
+                     'auth_source': WEBSERVER
+                 })

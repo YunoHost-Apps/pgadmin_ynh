@@ -11,32 +11,30 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# INITIALIZE AND STORE SETTINGS
-#=================================================
-
-# Used in expect script
-email=$(ynh_user_get_info --username $admin --key 'mail')
-
-#=================================================
 # Postgresql superuser
 #=================================================
 ynh_script_progression --message="Configuring Postgresql superuser..." --weight 1
 
 ynh_psql_execute_as_root --sql "ALTER USER $db_user WITH SUPERUSER CREATEDB CREATEROLE REPLICATION"
 
+
+ynh_script_progression --message='Creating base directory...'
+
+if [ -n "$(ls -A $data_dir)" ]; then
+    old_data_dir_path="${data_dir}_$(date '+%Y%m%d.%H%M%S')"
+    ynh_print_warn "Data directory was not empty. Data was moved to $old_data_dir_path"
+    mkdir -p $old_data_dir_path
+    mv -t "$old_data_dir_path" "$data_dir"/*
+fi
+mkdir -p /var/log/$app
+
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+
 ynh_script_progression --message="Setting up source files..." --weight=5
-ynh_install_venv
 
-_install_pgadmin_pip
-mkdir -p "$install_dir/data"
-
-chown -R "$app:root" "$install_dir"
-
-mkdir -p /var/log/pgadmin
-chown -R "$app:root" /var/log/pgadmin
+install_source
 
 #=================================================
 # ADD A CONFIGURATION
@@ -44,17 +42,11 @@ chown -R "$app:root" /var/log/pgadmin
 ynh_script_progression --message="Configuring pgAdmin..." --weight=1
 
 ynh_add_config --template="config_local.py" --destination="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/config_local.py"
-chown -R "$app:root" "$install_dir"
+ynh_add_config --template=postgres-reg.ini --destination="$install_dir"/postgres-reg.ini
+ynh_string_random --length=60 > "$data_dir"/master_pwd
+set_permission
 
-ynh_add_config --template="setup.exp" --destination="$install_dir/setup.exp"
-chmod +x "$install_dir/setup.exp"
-ynh_exec_as "$app" "$install_dir/setup.exp" "$install_dir/venv/bin/python3" "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/setup.py" setup-db
-
-ynh_add_config --template="server.json" --destination="$install_dir/server.json"
-ynh_exec_as "$app" "$install_dir/venv/bin/python3" "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/setup.py" load-servers --user "$email" "$install_dir/server.json"
-
-# looks like we need to run one command as pgadmin to get access to the dbs ?
-ynh_psql_connect_as --user="$db_user" --password="$db_pwd" <<< '\list' >/dev/null
+$install_dir/venv/bin/python3 "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/setup.py" setup-db
 
 #=================================================
 # SYSTEM CONFIGURATION
@@ -64,18 +56,20 @@ ynh_script_progression --message="Adding system configurations related to $app..
 # Create a dedicated NGINX config
 ynh_add_nginx_config
 
-# Config uwsgi
-ynh_add_uwsgi_service "python_version"
+# Add systemd config
+ynh_add_systemd_config --service=$app --template=pgadmin.service
 
-ynh_use_logrotate --logfile="/var/log/pgadmin"
-chown -R "$app:root" /var/log/pgadmin
+yunohost service add $app --log "/var/log/$app/$app.log" --description 'PgAdmin application'
+
+ynh_use_logrotate --logfile="/var/log/$app"
+set_permission
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --weight=3
 
-ynh_systemd_action --service_name "uwsgi-app@$app.service" --action="restart" --line_match "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
+ynh_systemd_action --service_name "$app.service" --action="restart" --line_match "Listening at: unix:/run/$app/app.socket" --log_path systemd
 
 #=================================================
 # END OF SCRIPT
