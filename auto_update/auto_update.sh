@@ -67,8 +67,8 @@ upgrade_app() {
         sed -r -i 's|version = "[[:alnum:].]{4,8}~ynh1"|version = "'${app_version}'~ynh1"|' ../manifest.toml
 
         # Update this link
-        sed -r -i "s|armhf.url\s*=(.*)/releases/download/v[[:alnum:].]{4,8}/${app_name}_[[:alnum:].]{4,8}-$debian_version_name_1-bin1_armv7l.tar.gz|arm.url =\1/releases/download/v${app_version}/${app_name}_${app_version}-$debian_version_name_1-bin1_armv7l.tar.gz|"  ../manifest.toml
-        sed -r -i "s|armhf.url\s*=(.*)/releases/download/v[[:alnum:].]{4,8}/${app_name}_[[:alnum:].]{4,8}-$debian_version_name_2-bin1_armv7l.tar.gz|arm.url =\1/releases/download/v${app_version}/${app_name}_${app_version}-$debian_version_name_2-bin1_armv7l.tar.gz|"  ../manifest.toml
+        sed -r -i "s|armhf.url\s*=(.*)/releases/download/v4-[[:alnum:].]{4,8}/${app_name}_4-[[:alnum:].]{4,8}-$debian_version_name_1-bin1_armv7l.tar.gz|arm.url =\1/releases/download/v${app_version}/${app_name}_${app_version}-$debian_version_name_1-bin1_armv7l.tar.gz|"  ../manifest.toml
+        sed -r -i "s|armhf.url\s*=(.*)/releases/download/v4-[[:alnum:].]{4,8}/${app_name}_4-[[:alnum:].]{4,8}-$debian_version_name_2-bin1_armv7l.tar.gz|arm.url =\1/releases/download/v${app_version}/${app_name}_${app_version}-$debian_version_name_2-bin1_armv7l.tar.gz|"  ../manifest.toml
 
         # Update checksum
         sha256sum_arm_archive_deb_1=$(cat $build_result_path_deb_1/${result_prefix_name_deb_1}-bin1_armv7l-sha256.txt)
