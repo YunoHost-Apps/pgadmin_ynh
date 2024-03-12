@@ -42,13 +42,13 @@ ram.runtime = "200M"
 [resources]
     [resources.sources.pgadmin_prebuilt_armv7_bookworm]
     prefetch = false
-    armhf.url = "https://github.com/YunoHost-Apps/pgadmin_python_build/releases/download/v4-8.3/pgadmin_4-8.3-bookworm-bin1_armv7l.tar.gz"
-    armhf.sha256 = "b2fdf884fe74e2e6a41d8f5f8f4b1967bc4ad6fffcfa5a76fc34ef6fe6c62e7e"
+    armhf.url = "https://github.com/YunoHost-Apps/pgadmin_python_build/releases/download/v4-8.4/pgadmin_4-8.4-bookworm-bin1_armv7l.tar.gz"
+    armhf.sha256 = "6fb8d4dbc92ce27f8d8cf3f47b101c440ee9a10c640517b31ba69b4daa5a1220"
 
     [resources.sources.pgadmin_prebuilt_armv7_bullseye]
     prefetch = false
-    armhf.url = "https://github.com/YunoHost-Apps/pgadmin_python_build/releases/download/v4-8.3/pgadmin_4-8.3-bullseye-bin1_armv7l.tar.gz"
-    armhf.sha256 = "bf1136e71b52a9bb75b6e3bc75a23a5d49fa104291f8b3f0114593e123e0d078"
+    armhf.url = "https://github.com/YunoHost-Apps/pgadmin_python_build/releases/download/v4-8.4/pgadmin_4-8.4-bullseye-bin1_armv7l.tar.gz"
+    armhf.sha256 = "fd9aa4205bab9f0279c0b4e9672be014f150793d03224b9fd47fe1628580de6c"
 
     [resources.system_user]
     allow_email = true
