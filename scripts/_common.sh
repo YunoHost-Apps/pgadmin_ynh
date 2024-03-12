@@ -13,7 +13,7 @@ postgresql_version="$(psql -V | cut -d' ' -f3 | cut -d. -f1)"
 
 install_source() {
     # Clean venv is it was on python with an old version in case major upgrade of debian
-    if [ ! -e $install_dir/venv/lib/python$python_version ] || ! grep -qF "$install_dir/venv/lib/python" "$install_dir"/venv/bin/pip; then
+    if [ ! -e $install_dir/venv/lib/python$python_version ] || ! grep -qF "$install_dir/venv/bin/python" "$install_dir"/venv/bin/pip; then
         ynh_secure_remove --file=$install_dir/venv/bin
         ynh_secure_remove --file=$install_dir/venv/lib
         ynh_secure_remove --file=$install_dir/venv/lib64
@@ -37,23 +37,24 @@ install_source() {
         # Install pgadmin in virtualenv
         pip=$install_dir/venv/bin/pip
         $pip install --upgrade pip wheel
-        $pip install --upgrade -r $YNH_APP_BASEDIR/conf/requirement_$(lsb_release --codename --short).txt
+        $pip install --upgrade -r "$YNH_APP_BASEDIR"/conf/requirement_$(lsb_release --codename --short).txt
     fi
 
     # Apply patchs if needed
+    # Note that we put patch into scripts dir because /source are not stored and can't be used on restore
     if ! grep -F -q '# BEGIN Yunohost Patch' $install_dir/venv/lib/python$python_version/site-packages/pgadmin4/migrations/versions/fdc58d9bd449_.py; then
         pushd $install_dir/venv/lib/python$python_version/site-packages/pgadmin4
-        patch -p1 < $YNH_APP_BASEDIR/sources/avoid_create_user_on_setup_db.patch
+        patch -p1 < "$YNH_APP_BASEDIR"/scripts/patch/avoid_create_user_on_setup_db.patch
         popd
     fi
     if ! grep -F -q '# BEGIN Yunohost Patch' $install_dir/venv/lib/python$python_version/site-packages/pgadmin4/pgadmin/__init__.py; then
         pushd $install_dir/venv/lib/python$python_version/site-packages/pgadmin4
-        patch -p1 < $YNH_APP_BASEDIR/sources/fix_add_local_db.patch
+        patch -p1 < "$YNH_APP_BASEDIR"/scripts/patch/fix_add_local_db.patch
         popd
     fi
     if ! grep -F -q '# BEGIN Yunohost Patch' $install_dir/venv/lib/python$python_version/site-packages/pgadmin4/pgadmin/authenticate/webserver.py; then
         pushd $install_dir/venv/lib/python$python_version/site-packages/pgadmin4
-        patch -p1 < $YNH_APP_BASEDIR/sources/change_default_webserver_new_user_role_to_admin.patch
+        patch -p1 < "$YNH_APP_BASEDIR"/scripts/patch/change_default_webserver_new_user_role_to_admin.patch
         popd
     fi
 }
