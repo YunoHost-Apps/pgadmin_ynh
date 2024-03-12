@@ -29,7 +29,7 @@ install_source() {
         ynh_secure_remove --file=$install_dir/venv/lib
         ynh_secure_remove --file=$install_dir/venv/include
         ynh_secure_remove --file=$install_dir/venv/share
-        ynh_setup_source --dest_dir $install_dir/ --source_id "pgadmin_prebuilt_armv7_$(lsb_release --codename --short)"
+        ynh_setup_source --dest_dir $install_dir/venv/ --source_id "pgadmin_prebuilt_armv7_$(lsb_release --codename --short)"
     else
         # Install virtualenv if it don't exist
         test -e $install_dir/venv/bin/python3 || python3 -m venv $install_dir/venv
