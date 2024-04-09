@@ -7,7 +7,7 @@ name = "pgAdmin4"
 description.en = "Manage PostgreSQL databases over the web"
 description.fr = "Application web de gestion des bases de données PostgreSQL"
 
-version = "8.2~ynh2"
+version = "8.5~ynh1"
 
 maintainers = ["Josué Tille"]
 
@@ -20,9 +20,9 @@ cpe = "cpe:2.3:a:pgadmin:pgadmin"
 [integration]
 yunohost = ">= 11.0.11"
 architectures = "all"
-multi_instance = false
-ldap = false
-sso = false
+multi_instance = true
+ldap = true
+sso = true
 disk = "700M"
 ram.build = "300M"
 ram.runtime = "200M"
@@ -39,16 +39,25 @@ ram.runtime = "200M"
     type = "group"
     default = "admins"
 
-    [install.admin]
-    type = "user"
-
-    [install.password]
-    type = "password"
-
 [resources]
+    [resources.sources.pgadmin_prebuilt_armv7_bookworm]
+    prefetch = false
+    armhf.url = "https://github.com/YunoHost-Apps/pgadmin_python_build/releases/download/v8.5/pgadmin_8.5-bookworm-bin1_armv7l.tar.gz"
+    armhf.sha256 = "55bce68b2dca172311acc9f9d1c8837d53af72b69a2e37dc9da9c374129b2fe8"
+
+    [resources.sources.pgadmin_prebuilt_armv7_bullseye]
+    prefetch = false
+    armhf.url = "https://github.com/YunoHost-Apps/pgadmin_python_build/releases/download/v8.5/pgadmin_8.5-bullseye-bin1_armv7l.tar.gz"
+    armhf.sha256 = "4f67b54a306220621f76a488e18b5c1a04379ee3914fbd91830378bcf8896363"
+
     [resources.system_user]
+    allow_email = true
+    home = "/opt/yunohost/__APP__"
 
     [resources.install_dir]
+    dir = "/opt/yunohost/__APP__"
+
+    [resources.data_dir]
 
     [resources.permissions]
     main.url = "/"
@@ -60,9 +69,6 @@ ram.runtime = "200M"
         "python3-dev",
         "python3-venv",
         "postgresql",
-        "uwsgi",
-        "uwsgi-plugin-python3",
-        "expect",
         "libpq-dev",
         "libkrb5-dev",
     ]

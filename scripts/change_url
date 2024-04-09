@@ -18,7 +18,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 ynh_script_progression --message="Stopping a systemd service..." --weight=1
 
-ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="stop" --log_path="/var/log/uwsgi/$app/$app.log"
+ynh_systemd_action --service_name="$app.service" --action="stop" --log_path="/var/log/$app/$app.log"
 
 #=================================================
 # MODIFY URL IN NGINX CONF
@@ -30,12 +30,8 @@ ynh_change_url_nginx_config
 #=================================================
 # SPECIFIC MODIFICATIONS
 #=================================================
-# UPDATE CONFIGURATION
-#=================================================
-ynh_script_progression --message="Updating configuration..." --weight=1
 
-# Update UWSGI Config
-ynh_add_uwsgi_service "python_version"
+set_permission
 
 #=================================================
 # GENERIC FINALISATION
@@ -45,7 +41,7 @@ ynh_add_uwsgi_service "python_version"
 ynh_script_progression --message="Starting a systemd service..." --weight=3
 
 # Start a systemd service
-ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="restart" --line_match="WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path="/var/log/uwsgi/$app/$app.log"
+ynh_systemd_action --service_name="$app.service" --action="restart" --line_match "Listening at: unix:/run/$app/app.socket" --log_path systemd
 
 #=================================================
 # END OF SCRIPT

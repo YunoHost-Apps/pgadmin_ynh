@@ -19,6 +19,13 @@ ynh_script_progression --message="Stopping a systemd service..." --weight=1
 
 if [ -f "/etc/uwsgi/apps-available/$app.ini" ]; then
     ynh_systemd_action --service_name "uwsgi-app@$app.service" --action stop
+    systemctl disable "uwsgi-app@$app.service" --quiet
+    yunohost service remove "uwsgi-app@$app" || true
+
+    ynh_secure_remove --file="/etc/uwsgi/apps-available/$app.ini"
+    ynh_secure_remove --file="/etc/systemd/system/uwsgi-app@$app.service.d"
+else
+    ynh_systemd_action --service_name "$app.service" --action stop
 fi
 
 #=================================================
@@ -26,17 +33,24 @@ fi
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=2
 
-# Set the proper home directory
-usermod -d "$install_dir" "$app"
-
 # Clean old uwsgi config
 ynh_secure_remove /etc/uwsgi/apps-enabled/pgadmin.ini
 
+# Migrate data path
 if [ -d "/var/lib/pgadmin" ]; then
     if [ ! -d "$install_dir/data" ]; then
-        mv "/var/lib/pgadmin" "$install_dir/data"
+        mv -t "$data_dir" /var/lib/pgadmin/*
     fi
     ynh_secure_remove "/var/lib/pgadmin"
+fi
+if [ -d "$install_dir/data" ]; then
+    if [ ! -d "$install_dir/data" ]; then
+        mv -t "$data_dir" "$install_dir"/data/*
+    fi
+    ynh_secure_remove "$install_dir/data"
+fi
+if [ ! -e $data_dir/master_pwd ]; then
+    ynh_string_random --length=60 > $data_dir/master_pwd
 fi
 
 #=================================================
@@ -51,11 +65,7 @@ ynh_psql_execute_as_root --sql "ALTER USER $app WITH PASSWORD '$db_pwd' SUPERUSE
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Upgrading source files..." --weight=6
-ynh_install_venv
-
-_install_pgadmin_pip
-
-chown -R "$app:root" "$install_dir"
+install_source
 
 #=================================================
 # UPDATE A CONFIG FILE
@@ -64,7 +74,7 @@ ynh_script_progression --message="Updating a configuration file..." --weight=1
 
 # CONFIGURE PGADMIN
 ynh_add_config --template="config_local.py" --destination="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/config_local.py"
-chown -R "$app:root" "$install_dir"
+ynh_add_config --template=postgres-reg.ini --destination="$install_dir"/postgres-reg.ini
 
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
@@ -74,19 +84,22 @@ ynh_script_progression --message="Upgrading system configurations related to $ap
 # Create a dedicated NGINX config
 ynh_add_nginx_config
 
-# Config uwsgi
-ynh_add_uwsgi_service "python_version"
+# Add systemd config
+ynh_add_systemd_config --service=$app --template=pgadmin.service
+
+yunohost service add $app --log "/var/log/$app/$app.log" --description 'PgAdmin application'
 
 # Use logrotate to manage app-specific logfile(s)
-ynh_use_logrotate --logfile /var/log/pgadmin --nonappend
-chown -R "$app:root" /var/log/pgadmin
+ynh_use_logrotate --logfile /var/log/$app --nonappend
+
+set_permission
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --weight=3
 
-ynh_systemd_action --service_name "uwsgi-app@$app.service" --action="restart" --line_match "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
+ynh_systemd_action --service_name "$app.service" --action="restart" --line_match "Listening at: unix:/run/$app/app.socket" --log_path systemd
 
 #=================================================
 # END OF SCRIPT
