@@ -8,7 +8,7 @@ User=__APP__
 WorkingDirectory=__INSTALL_DIR__
 RuntimeDirectory=__APP__
 # Note don't increase workers > 1 as it don't work
-ExecStart=__INSTALL_DIR__/venv/bin/gunicorn --bind unix:/run/__APP__/app.socket --workers=1 --threads=10 --chdir __INSTALL_DIR__/venv/lib/python__PYTHON_VERSION__/site-packages/pgadmin4 pgAdmin4:app
+ExecStart=__INSTALL_DIR__/venv/bin/gunicorn --bind unix:/run/__APP__/app.socket --workers=1 --threads=4 --chdir __INSTALL_DIR__/venv/lib/python__PYTHON_VERSION__/site-packages/pgadmin4 pgAdmin4:app
 Restart=always
 RestartSec=3
 
