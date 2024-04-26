@@ -38,8 +38,8 @@ install_source
 ynh_script_progression --message="Enable systemd services" --weight=2
 
 # systemctl daemon-reload
-systemctl enable $app.service --quiet
-yunohost service add $app --log "/var/log/$app/$app.log" --description 'PgAdmin application'
+systemctl enable "$app".service --quiet
+yunohost service add "$app" --log "/var/log/$app/$app.log" --description 'PgAdmin application'
 
 set_permission
 

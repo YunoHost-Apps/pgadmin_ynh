@@ -49,8 +49,8 @@ if [ -d "$install_dir/data" ]; then
     fi
     ynh_secure_remove "$install_dir/data"
 fi
-if [ ! -e $data_dir/master_pwd ]; then
-    ynh_string_random --length=60 > $data_dir/master_pwd
+if [ ! -e "$data_dir"/master_pwd ]; then
+    ynh_string_random --length=60 > "$data_dir"/master_pwd
 fi
 
 #=================================================
@@ -85,12 +85,12 @@ ynh_script_progression --message="Upgrading system configurations related to $ap
 ynh_add_nginx_config
 
 # Add systemd config
-ynh_add_systemd_config --service=$app --template=pgadmin.service
+ynh_add_systemd_config --service="$app" --template=pgadmin.service
 
-yunohost service add $app --log "/var/log/$app/$app.log" --description 'PgAdmin application'
+yunohost service add "$app" --log "/var/log/$app/$app.log" --description 'PgAdmin application'
 
 # Use logrotate to manage app-specific logfile(s)
-ynh_use_logrotate --logfile=/var/log/$app --nonappend
+ynh_use_logrotate --logfile=/var/log/"$app" --nonappend
 
 set_permission
 
