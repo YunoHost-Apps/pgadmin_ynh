@@ -18,14 +18,14 @@ source /usr/share/yunohost/helpers
 ynh_script_progression --message="Stopping a systemd service..." --weight=1
 
 if [ -f "/etc/uwsgi/apps-available/$app.ini" ]; then
-    ynh_systemd_action --service_name "uwsgi-app@$app.service" --action stop
+    ynh_systemd_action --service_name="uwsgi-app@$app.service" --action=stop
     systemctl disable "uwsgi-app@$app.service" --quiet
     yunohost service remove "uwsgi-app@$app" || true
 
     ynh_secure_remove --file="/etc/uwsgi/apps-available/$app.ini"
     ynh_secure_remove --file="/etc/systemd/system/uwsgi-app@$app.service.d"
 else
-    ynh_systemd_action --service_name "$app.service" --action stop
+    ynh_systemd_action --service_name="$app.service" --action=stop
 fi
 
 #=================================================
@@ -59,7 +59,7 @@ fi
 ynh_script_progression --message="Configuring Postgresql superuser..." --weight=1
 
 # Re-set the db_pwd just in case…
-ynh_psql_execute_as_root --sql "ALTER USER $app WITH PASSWORD '$db_pwd' SUPERUSER CREATEDB CREATEROLE REPLICATION"
+ynh_psql_execute_as_root --sql="ALTER USER $app WITH PASSWORD '$db_pwd' SUPERUSER CREATEDB CREATEROLE REPLICATION"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -90,7 +90,7 @@ ynh_add_systemd_config --service=$app --template=pgadmin.service
 yunohost service add $app --log "/var/log/$app/$app.log" --description 'PgAdmin application'
 
 # Use logrotate to manage app-specific logfile(s)
-ynh_use_logrotate --logfile /var/log/$app --nonappend
+ynh_use_logrotate --logfile=/var/log/$app --nonappend
 
 set_permission
 
@@ -99,7 +99,7 @@ set_permission
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --weight=3
 
-ynh_systemd_action --service_name "$app.service" --action="restart" --line_match "Listening at: unix:/run/$app/app.socket" --log_path systemd
+ynh_systemd_action --service_name="$app.service" --action="restart" --line_match="Listening at: unix:/run/$app/app.socket" --log_path=systemd
 
 #=================================================
 # END OF SCRIPT

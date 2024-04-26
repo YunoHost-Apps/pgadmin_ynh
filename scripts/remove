@@ -16,7 +16,7 @@ source /usr/share/yunohost/helpers
 ynh_script_progression --message="Removing system configurations related to $app..." --weight=1
 
 # Stop service
-ynh_systemd_action --service_name "$app.service" --action stop
+ynh_systemd_action --service_name="$app.service" --action=stop
 ynh_remove_systemd_config --service=$app
 yunohost service remove $app
 
