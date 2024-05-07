@@ -12,6 +12,14 @@ postgresql_version="$(psql -V | cut -d' ' -f3 | cut -d. -f1)"
 #=================================================
 
 install_source() {
+    # Cleanup old venv files
+    ynh_secure_remove --file="$install_dir"/bin
+    ynh_secure_remove --file="$install_dir"/lib
+    ynh_secure_remove --file="$install_dir"/lib64
+    ynh_secure_remove --file="$install_dir"/include
+    ynh_secure_remove --file="$install_dir"/share
+    ynh_secure_remove --file="$install_dir"/pyvenv.cfg
+
     # Clean venv is it was on python with an old version in case major upgrade of debian
     if [ ! -e "$install_dir/venv/lib/python$python_version" ] || ! grep -qF "$install_dir/venv/bin/python" "$install_dir"/venv/bin/pip; then
         ynh_secure_remove --file="$install_dir"/venv/bin
@@ -24,12 +32,14 @@ install_source() {
 
     if uname -m | grep -q arm
     then
-        # Clean old file, sometime it could make some big issues if we don't do this !!
-        ynh_secure_remove --file="$install_dir"/venv/bin
-        ynh_secure_remove --file="$install_dir"/venv/lib
-        ynh_secure_remove --file="$install_dir"/venv/include
-        ynh_secure_remove --file="$install_dir"/venv/share
-        ynh_setup_source --dest_dir "$install_dir"/venv/ --source_id "pgadmin_prebuilt_armv7_$(lsb_release --codename --short)"
+        ynh_setup_source --dest_dir "$install_dir"/venv/ --source_id "pgadmin_prebuilt_armv7_$(lsb_release --codename --short)" --full_replace
+
+        # Fix multi-instance support
+        for f in "$install_dir"/venv/bin/*; do
+            if ! [[ $f =~ "__" ]]; then
+                ynh_replace_special_string --match_string='#!'/opt/yunohost/pgadmin/venv --replace_string='#!'"$code_dir"/venv --target_file="$f"
+            fi
+        done
     else
         # Install virtualenv if it don't exist
         test -e "$install_dir"/venv/bin/python3 || python3 -m venv "$install_dir"/venv
