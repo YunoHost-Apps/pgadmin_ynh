@@ -7,7 +7,7 @@ name = "pgAdmin4"
 description.en = "Manage PostgreSQL databases over the web"
 description.fr = "Application web de gestion des bases de données PostgreSQL"
 
-version = "8.5~ynh2"
+version = "8.7~ynh1"
 
 maintainers = ["Josué Tille"]
 
@@ -42,13 +42,13 @@ ram.runtime = "200M"
 [resources]
     [resources.sources.pgadmin_prebuilt_armv7_bookworm]
     prefetch = false
-    armhf.url = "https://github.com/YunoHost-Apps/pgadmin_python_build/releases/download/v8.5/pgadmin_8.5-bookworm-bin1_armv7l.tar.gz"
-    armhf.sha256 = "55bce68b2dca172311acc9f9d1c8837d53af72b69a2e37dc9da9c374129b2fe8"
+    armhf.url = "https://github.com/YunoHost-Apps/pgadmin_python_build/releases/download/v8.7/pgadmin_8.7-bookworm-bin1_armv7l.tar.gz"
+    armhf.sha256 = "5aedef91672fd30022ba410cda919138ff18703b9839bbfc3bca4ea421102591"
 
     [resources.sources.pgadmin_prebuilt_armv7_bullseye]
     prefetch = false
-    armhf.url = "https://github.com/YunoHost-Apps/pgadmin_python_build/releases/download/v8.5/pgadmin_8.5-bullseye-bin1_armv7l.tar.gz"
-    armhf.sha256 = "4f67b54a306220621f76a488e18b5c1a04379ee3914fbd91830378bcf8896363"
+    armhf.url = "https://github.com/YunoHost-Apps/pgadmin_python_build/releases/download/v8.7/pgadmin_8.7-bullseye-bin1_armv7l.tar.gz"
+    armhf.sha256 = "9603492ca0fb2b258425b298705f0b2fa24e54d34182160d1854ce68c21f04a9"
 
     [resources.system_user]
     allow_email = true

@@ -16,7 +16,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 ynh_script_progression --message="Restoring the Postgresql superuser..." --weight=1
 
-ynh_psql_execute_as_root --sql "ALTER USER $app WITH SUPERUSER CREATEDB CREATEROLE REPLICATION"
+ynh_psql_execute_as_root --sql="ALTER USER $app WITH SUPERUSER CREATEDB CREATEROLE REPLICATION"
 
 #=================================================
 # RESTORE ALL CONFIG AND DATA
@@ -38,8 +38,8 @@ install_source
 ynh_script_progression --message="Enable systemd services" --weight=2
 
 # systemctl daemon-reload
-systemctl enable $app.service --quiet
-yunohost service add $app --log "/var/log/$app/$app.log" --description 'PgAdmin application'
+systemctl enable "$app".service --quiet
+yunohost service add "$app" --log "/var/log/$app/$app.log" --description 'PgAdmin application'
 
 set_permission
 
@@ -50,7 +50,7 @@ set_permission
 #=================================================
 ynh_script_progression --message="Reloading NGINX web server and $app's service..." --weight=1
 
-ynh_systemd_action --service_name "$app.service" --action="restart" --line_match "Listening at: unix:/run/$app/app.socket" --log_path systemd
+ynh_systemd_action --service_name="$app.service" --action="restart" --line_match="Listening at: unix:/run/$app/app.socket" --log_path=systemd
 
 ynh_systemd_action --service_name=nginx --action=reload
 

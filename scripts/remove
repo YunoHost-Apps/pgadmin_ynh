@@ -16,9 +16,9 @@ source /usr/share/yunohost/helpers
 ynh_script_progression --message="Removing system configurations related to $app..." --weight=1
 
 # Stop service
-ynh_systemd_action --service_name "$app.service" --action stop
-ynh_remove_systemd_config --service=$app
-yunohost service remove $app
+ynh_systemd_action --service_name="$app.service" --action=stop
+ynh_remove_systemd_config --service="$app"
+yunohost service remove "$app"
 
 # Remove the app-specific logrotate config
 ynh_remove_logrotate
@@ -33,8 +33,10 @@ ynh_remove_nginx_config
 #=================================================
 ynh_script_progression --message="Removing various files..." --weight=1
 
-# Remove the log files
-ynh_secure_remove --file="/var/log/$app"
+if [ "$YNH_APP_PURGE" -eq 1 ]; then
+    ynh_script_progression --message="Removing logs..."
+    ynh_secure_remove --file=/var/log/"$app"
+fi
 
 #=================================================
 # END OF SCRIPT
