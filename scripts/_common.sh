@@ -37,7 +37,7 @@ install_source() {
         # Fix multi-instance support
         for f in "$install_dir"/venv/bin/*; do
             if ! [[ $f =~ "__" ]]; then
-                ynh_replace_special_string --match_string='#!'/opt/yunohost/pgadmin/venv --replace_string='#!'"$code_dir"/venv --target_file="$f"
+                ynh_replace_special_string --match_string='#!'/opt/yunohost/pgadmin/venv --replace_string='#!'"$install_dir"/venv --target_file="$f"
             fi
         done
     else
