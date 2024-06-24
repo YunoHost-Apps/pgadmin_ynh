@@ -27,17 +27,6 @@ ynh_remove_logrotate
 ynh_remove_nginx_config
 
 #=================================================
-# SPECIFIC REMOVE
-#=================================================
-# REMOVE VARIOUS FILES
-#=================================================
-ynh_script_progression --message="Removing various files..." --weight=1
-
-if [ "$YNH_APP_PURGE" -eq 1 ]; then
-    ynh_script_progression --message="Removing logs..."
-fi
-
-#=================================================
 # END OF SCRIPT
 #=================================================
 
