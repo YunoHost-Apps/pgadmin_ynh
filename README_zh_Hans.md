@@ -5,7 +5,7 @@
 
 # YunoHost 上的 pgAdmin4
 
-[![集成程度](https://dash.yunohost.org/integration/pgadmin.svg)](https://dash.yunohost.org/appci/app/pgadmin) ![工作状态](https://ci-apps.yunohost.org/ci/badges/pgadmin.status.svg) ![维护状态](https://ci-apps.yunohost.org/ci/badges/pgadmin.maintain.svg)
+[![集成程度](https://dash.yunohost.org/integration/pgadmin.svg)](https://ci-apps.yunohost.org/ci/apps/pgadmin/) ![工作状态](https://ci-apps.yunohost.org/ci/badges/pgadmin.status.svg) ![维护状态](https://ci-apps.yunohost.org/ci/badges/pgadmin.maintain.svg)
 
 [![使用 YunoHost 安装 pgAdmin4](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=pgadmin)
 
@@ -19,7 +19,7 @@
 pgAdmin is a feature rich Open Source administration and development platform for PostgreSQL.
 
 
-**分发版本：** 8.8~ynh1
+**分发版本：** 8.9~ynh1
 
 ## 截图
 
