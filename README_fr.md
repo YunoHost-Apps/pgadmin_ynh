@@ -19,7 +19,7 @@ Il NE doit PAS être modifié à la main.
 pgAdmin is a feature rich Open Source administration and development platform for PostgreSQL.
 
 
-**Version incluse :** 8.9~ynh1
+**Version incluse :** 8.10~ynh1
 
 ## Captures d’écran
 
