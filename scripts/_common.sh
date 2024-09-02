@@ -72,9 +72,9 @@ install_source() {
 set_permission() {
     # Set permission
     chown "$app:$app" -R "$install_dir"
-    chmod u+rw,o= -R "$install_dir"
+    chmod u+rwX,g+rX-w,o= -R "$install_dir"
     chown "$app:$app" -R "$data_dir"
-    chmod u+rw,o= -R "$data_dir"
+    chmod u+rwX,g+rX-w,o= -R "$data_dir"
     chown "$app:$app" -R /var/log/"$app"
     chmod u=rwX,g=rX,o= -R /var/log/"$app"
     # Criticals files
