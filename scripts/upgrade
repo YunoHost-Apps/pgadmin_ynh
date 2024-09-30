@@ -1,6 +1,5 @@
 #!/bin/bash
 
-source experimental_helper.sh
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -57,6 +56,7 @@ ynh_psql_db_shell <<< "ALTER USER $app WITH PASSWORD '$db_pwd' SUPERUSER CREATED
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression "Upgrading source files..."
+
 install_source
 
 #=================================================
@@ -64,7 +64,6 @@ install_source
 #=================================================
 ynh_script_progression "Updating configuration..."
 
-# CONFIGURE PGADMIN
 ynh_config_add --template="config_local.py" --destination="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/config_local.py"
 ynh_config_add --template=postgres-reg.ini --destination="$install_dir"/postgres-reg.ini
 
@@ -73,15 +72,12 @@ ynh_config_add --template=postgres-reg.ini --destination="$install_dir"/postgres
 #=================================================
 ynh_script_progression "Upgrading system configurations related to $app..."
 
-# Create a dedicated NGINX config
 ynh_config_add_nginx
 
-# Add systemd config
-ynh_config_add_systemd  --template=pgadmin.service
+ynh_config_add_systemd --template=pgadmin.service
 
 yunohost service add "$app" --log "/var/log/$app/$app.log" --description 'PgAdmin application'
 
-# Use logrotate to manage app-specific logfile(s)
 ynh_config_add_logrotate /var/log/"$app"
 
 set_permission

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Import common cmd
-source experimental_helper.sh
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -30,7 +28,6 @@ set_permission
 #=================================================
 ynh_script_progression "Starting $app's systemd service..."
 
-# Start a systemd service
 ynh_systemctl --service="$app.service" --action="restart" --wait_until="Listening at: unix:/run/$app/app.socket" --log_path=systemd
 
 #=================================================

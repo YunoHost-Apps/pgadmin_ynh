@@ -24,7 +24,6 @@ mkdir -p /var/log/"$app"
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-
 ynh_script_progression "Setting up source files..."
 
 install_source
@@ -46,15 +45,14 @@ $install_dir/venv/bin/python3 "$install_dir/venv/lib/python$python_version/site-
 #=================================================
 ynh_script_progression "Adding system configurations related to $app..."
 
-# Create a dedicated NGINX config
 ynh_config_add_nginx
 
-# Add systemd config
-ynh_config_add_systemd  --template=pgadmin.service
+ynh_config_add_systemd --template=pgadmin.service
 
 yunohost service add $app --log "/var/log/$app/$app.log" --description 'PgAdmin application'
 
 ynh_config_add_logrotate "/var/log/$app"
+
 set_permission
 
 #=================================================
