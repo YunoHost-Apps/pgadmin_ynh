@@ -18,7 +18,8 @@ admindoc = "https://www.pgadmin.org/docs"
 cpe = "cpe:2.3:a:pgadmin:pgadmin"
 
 [integration]
-yunohost = ">= 11.2"
+yunohost = ">= 11.2.30"
+helpers_version = "2.1"
 architectures = "all"
 multi_instance = true
 ldap = true
@@ -52,10 +53,8 @@ ram.runtime = "200M"
 
     [resources.system_user]
     allow_email = true
-    home = "/opt/yunohost/__APP__"
 
     [resources.install_dir]
-    dir = "/opt/yunohost/__APP__"
 
     [resources.data_dir]
 

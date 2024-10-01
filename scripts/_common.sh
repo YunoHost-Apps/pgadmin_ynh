@@ -13,21 +13,21 @@ postgresql_version="$(psql -V | cut -d' ' -f3 | cut -d. -f1)"
 
 install_source() {
     # Cleanup old venv files
-    ynh_secure_remove --file="$install_dir"/bin
-    ynh_secure_remove --file="$install_dir"/lib
-    ynh_secure_remove --file="$install_dir"/lib64
-    ynh_secure_remove --file="$install_dir"/include
-    ynh_secure_remove --file="$install_dir"/share
-    ynh_secure_remove --file="$install_dir"/pyvenv.cfg
+    ynh_safe_rm "$install_dir"/bin
+    ynh_safe_rm "$install_dir"/lib
+    ynh_safe_rm "$install_dir"/lib64
+    ynh_safe_rm "$install_dir"/include
+    ynh_safe_rm "$install_dir"/share
+    ynh_safe_rm "$install_dir"/pyvenv.cfg
 
     # Clean venv is it was on python with an old version in case major upgrade of debian
     if [ ! -e "$install_dir/venv/lib/python$python_version" ] || ! grep -qF "$install_dir/venv/bin/python" "$install_dir"/venv/bin/pip; then
-        ynh_secure_remove --file="$install_dir"/venv/bin
-        ynh_secure_remove --file="$install_dir"/venv/lib
-        ynh_secure_remove --file="$install_dir"/venv/lib64
-        ynh_secure_remove --file="$install_dir"/venv/include
-        ynh_secure_remove --file="$install_dir"/venv/share
-        ynh_secure_remove --file="$install_dir"/venv/pyvenv.cfg
+        ynh_safe_rm "$install_dir"/venv/bin
+        ynh_safe_rm "$install_dir"/venv/lib
+        ynh_safe_rm "$install_dir"/venv/lib64
+        ynh_safe_rm "$install_dir"/venv/include
+        ynh_safe_rm "$install_dir"/venv/share
+        ynh_safe_rm "$install_dir"/venv/pyvenv.cfg
     fi
 
     if uname -m | grep -q arm
@@ -37,7 +37,7 @@ install_source() {
         # Fix multi-instance support
         for f in "$install_dir"/venv/bin/*; do
             if ! [[ $f =~ "__" ]]; then
-                ynh_replace_special_string --match_string='#!'/opt/yunohost/pgadmin/venv --replace_string='#!'"$install_dir"/venv --target_file="$f"
+                ynh_replace_regex --match='#!'/opt/yunohost/pgadmin/venv --replace='#!'"$install_dir"/venv --file="$f"
             fi
         done
     else
@@ -72,9 +72,9 @@ install_source() {
 set_permission() {
     # Set permission
     chown "$app:$app" -R "$install_dir"
-    chmod u+rw,o= -R "$install_dir"
+    chmod u+rwX,g+rX-w,o= -R "$install_dir"
     chown "$app:$app" -R "$data_dir"
-    chmod u+rw,o= -R "$data_dir"
+    chmod u+rwX,g+rX-w,o= -R "$data_dir"
     chown "$app:$app" -R /var/log/"$app"
     chmod u=rwX,g=rX,o= -R /var/log/"$app"
     # Criticals files
@@ -83,4 +83,3 @@ set_permission() {
     chown "$app":root "$install_dir"/postgres-reg.ini
     chmod u=r,g=,o= "$install_dir"/postgres-reg.ini
 }
-
