@@ -19,7 +19,7 @@ Hij mag NIET handmatig aangepast worden.
 pgAdmin is a feature rich Open Source administration and development platform for PostgreSQL.
 
 
-**Geleverde versie:** 8.11~ynh1
+**Geleverde versie:** 8.12~ynh1
 
 ## Schermafdrukken
 
