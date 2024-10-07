@@ -1,61 +1,50 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
-# Keep this path for calling _common.sh inside the execution's context of backup and restore scripts
-source ../settings/scripts/experimental_helper.sh
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
 # RESTORE THE POSTGRESQL SUPERUSER
 #=================================================
-ynh_script_progression --message="Restoring the Postgresql superuser..." --weight=1
+ynh_script_progression "Restoring the Postgresql superuser..."
 
-ynh_psql_execute_as_root --sql="ALTER USER $app WITH SUPERUSER CREATEDB CREATEROLE REPLICATION"
+ynh_psql_db_shell <<< "ALTER USER $app WITH SUPERUSER CREATEDB CREATEROLE REPLICATION"
 
 #=================================================
 # RESTORE ALL CONFIG AND DATA
 #=================================================
+ynh_script_progression "Restoring directory and configuration..."
 
-ynh_script_progression --message="Restoring directory and configuration..." --weight=10
-ynh_restore
+ynh_restore_everything
 
 #=================================================
 # REINSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Updating python virtualenv..." --weight=5
+ynh_script_progression "Updating python virtualenv..."
 
 install_source
 
 #=================================================
 # RESTORE SYSTEMD
 #=================================================
-ynh_script_progression --message="Enable systemd services" --weight=2
+ynh_script_progression "Enable systemd services"
 
-# systemctl daemon-reload
 systemctl enable "$app".service --quiet
 yunohost service add "$app" --log "/var/log/$app/$app.log" --description 'PgAdmin application'
 
 set_permission
 
 #=================================================
-# GENERIC FINALIZATION
-#=================================================
 # RELOAD NGINX AND THE APP SERVICE
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server and $app's service..." --weight=1
+ynh_script_progression "Reloading NGINX web server and $app's service..."
 
-ynh_systemd_action --service_name="$app.service" --action="restart" --line_match="Listening at: unix:/run/$app/app.socket" --log_path=systemd
+ynh_systemctl --service="$app.service" --action="restart" --wait_until="Listening at: unix:/run/$app/app.socket" --log_path=systemd
 
-ynh_systemd_action --service_name=nginx --action=reload
+ynh_systemctl --service=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Restoration completed for $app" --last
+ynh_script_progression "Restoration completed for $app"
