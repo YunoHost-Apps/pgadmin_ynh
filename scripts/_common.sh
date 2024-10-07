@@ -67,6 +67,11 @@ install_source() {
         patch -p1 < "$YNH_APP_BASEDIR"/scripts/patch/change_default_webserver_new_user_role_to_admin.patch
         popd
     fi
+    if ! grep -F -q '# BEGIN Yunohost Patch' "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/pgadmin/browser/__init__.py"; then
+        pushd "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4"
+        patch -p1 < "$YNH_APP_BASEDIR"/scripts/patch/fix_master_key_management.patch
+        popd
+    fi
 }
 
 set_permission() {

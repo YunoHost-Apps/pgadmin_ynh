@@ -1,0 +1,20 @@
+diff --git a/pgadmin/browser/__init__.py b/pgadmin/browser/__init__.py
+index 9d27822d3..8661bb30c 100644
+--- a/pgadmin/browser/__init__.py
++++ b/pgadmin/browser/__init__.py
+@@ -842,9 +842,14 @@ def set_master_password():
+                 # Re-encrypt with new key
+                 from pgadmin.browser.server_groups.servers.utils \
+                     import reencrpyt_server_passwords
+-                reencrpyt_server_passwords(
++                # BEGIN Yunohost Patch
++                try:
++                    reencrpyt_server_passwords(
+                     current_user.id, current_user.password,
+                     data.get('password'))
++                except Exception as e:
++                    logging.exception(str(e), exc_info=True)
++                # END Yunohost Patch
+
+             # set the encrypted sample text with the new
+             # master pass
