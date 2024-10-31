@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# WARNING: Don't edit this file. All change will be removed after each app upgrade
+
 import builtins
 import logging
 import os
@@ -114,7 +116,7 @@ WEBSERVER_AUTO_CREATE_USER = True
 # request header will be checked for the same.
 # Possible values: REMOTE_USER, HTTP_X_FORWARDED_USER, X-Forwarded-User
 
-WEBSERVER_REMOTE_USER = 'REMOTE_USER'
+WEBSERVER_REMOTE_USER = 'Ynh-User'
 
 ##########################################################################
 # PSQL tool settings

@@ -1,53 +1,44 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
-source experimental_helper.sh
 source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# STANDARD UPGRADE STEPS
-#=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Stopping a systemd service..." --weight=1
+ynh_script_progression "Stopping $app's systemd service..."
 
 if [ -f "/etc/uwsgi/apps-available/$app.ini" ]; then
-    ynh_systemd_action --service_name="uwsgi-app@$app.service" --action=stop
+    ynh_systemctl --service="uwsgi-app@$app.service" --action=stop
     systemctl disable "uwsgi-app@$app.service" --quiet
     yunohost service remove "uwsgi-app@$app" || true
 
-    ynh_secure_remove --file="/etc/uwsgi/apps-available/$app.ini"
-    ynh_secure_remove --file="/etc/systemd/system/uwsgi-app@$app.service.d"
+    ynh_safe_rm "/etc/uwsgi/apps-available/$app.ini"
+    ynh_safe_rm "/etc/systemd/system/uwsgi-app@$app.service.d"
 else
-    ynh_systemd_action --service_name="$app.service" --action=stop
+    ynh_systemctl --service="$app.service" --action=stop
 fi
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
-ynh_script_progression --message="Ensuring downward compatibility..." --weight=2
+ynh_script_progression "Ensuring downward compatibility..."
 
 # Clean old uwsgi config
-ynh_secure_remove /etc/uwsgi/apps-enabled/pgadmin.ini
+ynh_safe_rm /etc/uwsgi/apps-enabled/pgadmin.ini
 
 # Migrate data path
 if [ -d "/var/lib/pgadmin" ]; then
     if [ ! -d "$install_dir/data" ]; then
         mv -t "$data_dir" /var/lib/pgadmin/*
     fi
-    ynh_secure_remove "/var/lib/pgadmin"
+    ynh_safe_rm "/var/lib/pgadmin"
 fi
 if [ -d "$install_dir/data" ]; then
     if [ ! -d "$install_dir/data" ]; then
         mv -t "$data_dir" "$install_dir"/data/*
     fi
-    ynh_secure_remove "$install_dir/data"
+    ynh_safe_rm "$install_dir/data"
 fi
 if [ ! -e "$data_dir"/master_pwd ]; then
     ynh_string_random --length=60 > "$data_dir"/master_pwd
@@ -56,53 +47,54 @@ fi
 #=================================================
 # Postgresql superuser
 #=================================================
-ynh_script_progression --message="Configuring Postgresql superuser..." --weight=1
+ynh_script_progression "Configuring Postgresql superuser..."
 
 # Re-set the db_pwd just in case…
-ynh_psql_execute_as_root --sql="ALTER USER $app WITH PASSWORD '$db_pwd' SUPERUSER CREATEDB CREATEROLE REPLICATION"
+ynh_psql_db_shell <<< "ALTER USER $app WITH PASSWORD '$db_pwd' SUPERUSER CREATEDB CREATEROLE REPLICATION"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Upgrading source files..." --weight=6
+ynh_script_progression "Upgrading source files..."
+
 install_source
 
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
-ynh_script_progression --message="Updating a configuration file..." --weight=1
+ynh_script_progression "Updating configuration..."
 
-# CONFIGURE PGADMIN
-ynh_add_config --template="config_local.py" --destination="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/config_local.py"
-ynh_add_config --template=postgres-reg.ini --destination="$install_dir"/postgres-reg.ini
+if [ "$(lsb_release -c -s)" == bullseye ]; then
+    # Fix header for retro compability on Yunohost 11
+    ynh_replace --match="'Ynh-User'" --replace="'REMOTE_USER'" --file="../conf/config_local.py"
+fi
+ynh_config_add --template="config_local.py" --destination="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/config_local.py"
+ynh_config_add --template=postgres-reg.ini --destination="$install_dir"/postgres-reg.ini
 
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
+ynh_script_progression "Upgrading system configurations related to $app..."
 
-# Create a dedicated NGINX config
-ynh_add_nginx_config
+ynh_config_add_nginx
 
-# Add systemd config
-ynh_add_systemd_config --service="$app" --template=pgadmin.service
+ynh_config_add_systemd --template=pgadmin.service
 
 yunohost service add "$app" --log "/var/log/$app/$app.log" --description 'PgAdmin application'
 
-# Use logrotate to manage app-specific logfile(s)
-ynh_use_logrotate --logfile=/var/log/"$app" --nonappend
+ynh_config_add_logrotate /var/log/"$app"
 
 set_permission
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=3
+ynh_script_progression "Starting $app's systemd service..."
 
-ynh_systemd_action --service_name="$app.service" --action="restart" --line_match="Listening at: unix:/run/$app/app.socket" --log_path=systemd
+ynh_systemctl --service="$app.service" --action="restart" --wait_until="Listening at: unix:/run/$app/app.socket" --log_path=systemd
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Upgrade of $app completed" --last
+ynh_script_progression "Upgrade of $app completed"

@@ -19,7 +19,7 @@ No se debe editar a mano.
 pgAdmin is a feature rich Open Source administration and development platform for PostgreSQL.
 
 
-**Versión actual:** 8.11~ynh1
+**Versión actual:** 8.12~ynh1
 
 ## Capturas
 
@@ -34,7 +34,7 @@ pgAdmin is a feature rich Open Source administration and development platform fo
 
 ## Información para desarrolladores
 
-Por favor enviar sus correcciones a la [`branch testing`](https://github.com/YunoHost-Apps/pgadmin_ynh/tree/testing
+Por favor enviar sus correcciones a la [rama `testing`](https://github.com/YunoHost-Apps/pgadmin_ynh/tree/testing).
 
 Para probar la rama `testing`, sigue asÍ:
 

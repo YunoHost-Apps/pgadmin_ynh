@@ -1,11 +1,5 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source experimental_helper.sh
 source _common.sh
 source /usr/share/yunohost/helpers
@@ -13,12 +7,11 @@ source /usr/share/yunohost/helpers
 #=================================================
 # Postgresql superuser
 #=================================================
-ynh_script_progression --message="Configuring Postgresql superuser..." --weight=1
+ynh_script_progression "Configuring Postgresql superuser..."
 
-ynh_psql_execute_as_root --sql="ALTER USER $db_user WITH SUPERUSER CREATEDB CREATEROLE REPLICATION"
+ynh_psql_db_shell <<< "ALTER USER $db_user WITH SUPERUSER CREATEDB CREATEROLE REPLICATION"
 
-
-ynh_script_progression --message='Creating base directory...'
+ynh_script_progression 'Creating base directory...'
 
 if [ -n "$(ls -A "$data_dir")" ]; then
     old_data_dir_path="${data_dir}_$(date '+%Y%m%d.%H%M%S')"
@@ -31,18 +24,21 @@ mkdir -p /var/log/"$app"
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-
-ynh_script_progression --message="Setting up source files..." --weight=5
+ynh_script_progression "Setting up source files..."
 
 install_source
 
 #=================================================
 # ADD A CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring pgAdmin..." --weight=1
+ynh_script_progression "Configuring pgAdmin..."
 
-ynh_add_config --template="config_local.py" --destination="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/config_local.py"
-ynh_add_config --template=postgres-reg.ini --destination="$install_dir"/postgres-reg.ini
+if [ "$(lsb_release -c -s)" == bullseye ]; then
+    # Fix header for retro compability on Yunohost 11
+    ynh_replace --match="'Ynh-User'" --replace="'REMOTE_USER'" --file="../conf/config_local.py"
+fi
+ynh_config_add --template="config_local.py" --destination="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/config_local.py"
+ynh_config_add --template=postgres-reg.ini --destination="$install_dir"/postgres-reg.ini
 ynh_string_random --length=60 > "$data_dir"/master_pwd
 set_permission
 
@@ -51,28 +47,27 @@ $install_dir/venv/bin/python3 "$install_dir/venv/lib/python$python_version/site-
 #=================================================
 # SYSTEM CONFIGURATION
 #=================================================
-ynh_script_progression --message="Adding system configurations related to $app..." --weight=1
+ynh_script_progression "Adding system configurations related to $app..."
 
-# Create a dedicated NGINX config
-ynh_add_nginx_config
+ynh_config_add_nginx
 
-# Add systemd config
-ynh_add_systemd_config --service=$app --template=pgadmin.service
+ynh_config_add_systemd --template=pgadmin.service
 
 yunohost service add $app --log "/var/log/$app/$app.log" --description 'PgAdmin application'
 
-ynh_use_logrotate --logfile="/var/log/$app"
+ynh_config_add_logrotate "/var/log/$app"
+
 set_permission
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=3
+ynh_script_progression "Starting $app's systemd service..."
 
-ynh_systemd_action --service_name="$app.service" --action="restart" --line_match="Listening at: unix:/run/$app/app.socket" --log_path=systemd
+ynh_systemctl --service="$app.service" --action="restart" --wait_until="Listening at: unix:/run/$app/app.socket" --log_path=systemd
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Installation of $app completed" --last
+ynh_script_progression "Installation of $app completed"
