@@ -5,7 +5,9 @@ Il NE doit PAS être modifié à la main.
 
 # pgAdmin4 pour YunoHost
 
-[![Niveau d’intégration](https://dash.yunohost.org/integration/pgadmin.svg)](https://ci-apps.yunohost.org/ci/apps/pgadmin/) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/pgadmin.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/pgadmin.maintain.svg)
+[![Niveau d’intégration](https://apps.yunohost.org/badge/integration/pgadmin)](https://ci-apps.yunohost.org/ci/apps/pgadmin/)
+![Statut du fonctionnement](https://apps.yunohost.org/badge/state/pgadmin)
+![Statut de maintenance](https://apps.yunohost.org/badge/maintained/pgadmin)
 
 [![Installer pgAdmin4 avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=pgadmin)
 
@@ -19,7 +21,7 @@ Il NE doit PAS être modifié à la main.
 pgAdmin is a feature rich Open Source administration and development platform for PostgreSQL.
 
 
-**Version incluse :** 8.13~ynh1
+**Version incluse :** 8.14~ynh1
 
 ## Captures d’écran
 
