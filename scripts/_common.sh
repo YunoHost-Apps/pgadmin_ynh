@@ -47,7 +47,10 @@ install_source() {
         # Install pgadmin in virtualenv
         pip="$install_dir"/venv/bin/pip
         $pip install --upgrade 'pip<24.1' wheel
+
+        ynh_add_swap --size=2000
         $pip install --upgrade -r "$YNH_APP_BASEDIR/conf/requirement_$(lsb_release --codename --short).txt"
+        ynh_del_swap
     fi
 
     # Apply patchs if needed
