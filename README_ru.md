@@ -21,7 +21,7 @@
 pgAdmin is a feature rich Open Source administration and development platform for PostgreSQL.
 
 
-**Поставляемая версия:** 8.14~ynh1
+**Поставляемая версия:** 9.0~ynh1
 
 ## Снимки экрана
 
