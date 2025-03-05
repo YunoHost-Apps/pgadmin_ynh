@@ -119,6 +119,7 @@ config_pgadmin
 ynh_add_uwsgi_service 'pgadmin_user python_version'
 
 ynh_script_progression --message="Configuring sqlite database..."
+ynh_psql_test_if_first_run
 
 # initialisation sqlite database for pgadmin
 chmod +x ../conf/setup.exp
@@ -130,7 +131,6 @@ ynh_replace_special_string --match_string "__ADMIN_PASSWORD__" --replace_string 
 
 # POPULATE THE DATABASE
 ynh_script_progression --message="Configuring Postgresql database..."
-ynh_psql_test_if_first_run
 ynh_psql_execute_as_root \
     --sql "CREATE USER ${db_user} WITH PASSWORD '${db_pwd}' SUPERUSER CREATEDB CREATEROLE REPLICATION"
 
