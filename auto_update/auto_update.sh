@@ -6,7 +6,7 @@ readonly app_name=pgadmin
 
 source auto_update_config.sh
 
-readonly debian_version_name_1=bullseye
+readonly debian_version_name_1=trixie
 readonly debian_version_name_2=bookworm
 
 get_from_manifest() {

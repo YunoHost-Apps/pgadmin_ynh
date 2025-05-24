@@ -18,7 +18,7 @@ admindoc = "https://www.pgadmin.org/docs"
 cpe = "cpe:2.3:a:pgadmin:pgadmin"
 
 [integration]
-yunohost = ">= 11.2.30"
+yunohost = ">= 12.0.0"
 helpers_version = "2.1"
 architectures = "all"
 multi_instance = true
@@ -46,9 +46,9 @@ ram.runtime = "200M"
     armhf.url = "https://github.com/YunoHost-Apps/pgadmin_python_build/releases/download/v9.3/pgadmin_9.3-bookworm-bin1_armv7l.tar.gz"
     armhf.sha256 = "2f8fdebbd5459517dcf2ad233774c61f5330ebef750009c3ffc4570a3f7d076c"
 
-    [resources.sources.pgadmin_prebuilt_armv7_bullseye]
+    [resources.sources.pgadmin_prebuilt_armv7_trixie]
     prefetch = false
-    armhf.url = "https://github.com/YunoHost-Apps/pgadmin_python_build/releases/download/v9.3/pgadmin_9.3-bullseye-bin1_armv7l.tar.gz"
+    armhf.url = "https://github.com/YunoHost-Apps/pgadmin_python_build/releases/download/v9.3/pgadmin_9.3-trixie-bin1_armv7l.tar.gz"
     armhf.sha256 = "1565dbccdff64aa297070df5626f9de04d5bf68d34a50ddc5ca927f428b307a1"
 
     [resources.system_user]
