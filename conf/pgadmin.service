@@ -7,6 +7,7 @@ Type=simple
 User=__APP__
 WorkingDirectory=__INSTALL_DIR__
 RuntimeDirectory=__APP__
+Environment=CONFIG_DISTRO_FILE_PATH='__CONFIG_DIR__/config_distro.py'
 # Note don't increase workers > 1 as it don't work
 ExecStart=__INSTALL_DIR__/venv/bin/gunicorn --bind unix:/run/__APP__/app.socket --workers=1 --threads=4 --chdir __INSTALL_DIR__/venv/lib/python__PYTHON_VERSION__/site-packages/pgadmin4 pgAdmin4:app
 Restart=always

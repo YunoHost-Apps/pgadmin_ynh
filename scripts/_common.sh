@@ -4,8 +4,9 @@
 # SET ALL CONSTANTS
 #=================================================
 
-python_version="$(python3 -V | cut -d' ' -f2 | cut -d. -f1-2)"
-postgresql_version="$(psql -V | cut -d' ' -f3 | cut -d. -f1)"
+readonly python_version="$(python3 -V | cut -d' ' -f2 | cut -d. -f1-2)"
+readonly postgresql_version="$(psql -V | cut -d' ' -f3 | cut -d. -f1)"
+readonly config_dir="/etc/$app"
 
 #=================================================
 # DEFINE ALL COMMON FONCTIONS
@@ -72,6 +73,8 @@ install_source() {
         patch -p1 < "$YNH_APP_BASEDIR"/scripts/patch/fix_master_key_management.patch
         popd
     fi
+    # Customize system config file
+    ynh_replace_regex --match="system_config_dir = '/etc/pgadmin'" --replace="system_config_dir = '$config_dir'" --file="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/pgadmin/evaluate_config.py"
 }
 
 set_permission() {
@@ -80,11 +83,13 @@ set_permission() {
     chmod u+rwX,g+rX-w,o= -R "$install_dir"
     chown "$app:$app" -R "$data_dir"
     chmod u+rwX,g+rX-w,o= -R "$data_dir"
+    chown "$app:$app" -R "$config_dir"
+    chmod u+rwX,g+rX-w,o= -R "$config_dir"
     chown "$app:$app" -R /var/log/"$app"
     chmod u=rwX,g=rX,o= -R /var/log/"$app"
     # Criticals files
     chown "$app":root "$data_dir"/master_pwd
     chmod u=r,g=,o= "$data_dir"/master_pwd
-    chown "$app":root "$install_dir"/postgres-reg.ini
-    chmod u=r,g=,o= "$install_dir"/postgres-reg.ini
+    chown "$app":root "$config_dir"/postgres-reg.ini
+    chmod u=r,g=,o= "$config_dir"/postgres-reg.ini
 }
