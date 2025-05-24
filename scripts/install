@@ -18,7 +18,7 @@ if [ -n "$(ls -A "$data_dir")" ]; then
     mkdir -p "$old_data_dir_path"
     mv -t "$old_data_dir_path" "$data_dir"/*
 fi
-mkdir -p /var/log/"$app"
+mkdir -p /var/log/"$app" "$config_dir"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -32,12 +32,8 @@ install_source
 #=================================================
 ynh_script_progression "Configuring pgAdmin..."
 
-if [ "$(lsb_release -c -s)" == bullseye ]; then
-    # Fix header for retro compability on Yunohost 11
-    ynh_replace --match="'Ynh-User'" --replace="'REMOTE_USER'" --file="../conf/config_local.py"
-fi
-ynh_config_add --template="config_local.py" --destination="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/config_local.py"
-ynh_config_add --template=postgres-reg.ini --destination="$install_dir"/postgres-reg.ini
+ynh_config_add --jinja --template="config_distro.py" --destination="$config_dir/config_distro.py"
+ynh_config_add --template=postgres-reg.ini --destination="$config_dir"/postgres-reg.ini
 ynh_string_random --length=60 > "$data_dir"/master_pwd
 set_permission
 
