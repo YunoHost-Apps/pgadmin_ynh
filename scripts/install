@@ -37,7 +37,7 @@ ynh_config_add --template=postgres-reg.ini --destination="$config_dir"/postgres-
 ynh_string_random --length=60 > "$data_dir"/master_pwd
 set_permission
 
-$install_dir/venv/bin/python3 "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/setup.py" setup-db
+CONFIG_DISTRO_FILE_PATH="$config_dir/config_distro.py" $install_dir/venv/bin/python3 "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/setup.py" setup-db
 
 #=================================================
 # SYSTEM CONFIGURATION
