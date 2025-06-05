@@ -4,10 +4,10 @@ set -eu
 
 readonly app_name=pgadmin
 
-source auto_update_config.sh
-
 readonly debian_version_name_1=trixie
 readonly debian_version_name_2=bookworm
+
+source auto_update_config.sh
 
 get_from_manifest() {
     result=$(python3 <<EOL
