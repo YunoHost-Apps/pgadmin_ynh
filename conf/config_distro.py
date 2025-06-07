@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
 # WARNING: Don't edit this file. All change will be removed after each app upgrade
+# In case of a need to edit, please edit the dedicated file for customisation in: /etc/{{ app }}/config_system.py
 
 import builtins
 import logging
-import os
-import sys
 
 ##########################################################################
 # Server settings
@@ -13,8 +12,8 @@ import sys
 
 SERVER_MODE = True
 
-DATA_DIR = '__DATA_DIR__'
-REGISTRY_CONFIG_FILE = '__INSTALL_DIR__/postgres-reg.ini'
+DATA_DIR = '{{ data_dir }}'
+REGISTRY_CONFIG_FILE = '{{ config_dir }}/postgres-reg.ini'
 
 ##########################################################################
 # Log settings
@@ -39,7 +38,7 @@ CONSOLE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
 FILE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
 
 # Log file name
-LOG_FILE = '/var/log/__APP__/pgadmin4.log'
+LOG_FILE = '/var/log/{{ app }}/pgadmin4.log'
 
 # Log rotation setting
 # Log file will be rotated considering values for LOG_ROTATION_SIZE
@@ -56,17 +55,48 @@ LOG_ROTATION_MAX_LOG_FILES = 90  # Maximum number of backups to retain
 # These settings are used when running in web server mode for confirming
 # and resetting passwords etc.
 # See: http://pythonhosted.org/Flask-Mail/ for more info
-MAIL_SERVER = '__DOMAIN__'
+MAIL_SERVER = '{{ domain }}'
 MAIL_PORT = 587
 MAIL_USE_SSL = True
 MAIL_USE_TLS = False
-MAIL_USERNAME = '__APP__'
-MAIL_PASSWORD = '__MAIL_PWD__'
+MAIL_USERNAME = '{{ app }}'
+MAIL_PASSWORD = '{{ mail_pwd }}'
 MAIL_DEBUG = False
 
 # Flask-Security overrides Flask-Mail's MAIL_DEFAULT_SENDER setting, so
 # that should be set as such:
-SECURITY_EMAIL_SENDER = '__APP__@__DOMAIN__'
+SECURITY_EMAIL_SENDER = '{{ app }}@{{ domain }}'
+
+##########################################################################
+# Upgrade checks
+##########################################################################
+
+# Check for new versions of the application?
+UPGRADE_CHECK_ENABLED = False
+
+##########################################################################
+# Default locations for binary utilities (pg_dump, pg_restore etc)
+#
+# These are intentionally left empty in the main config file, but are
+# expected to be overridden by packagers in config_distro.py.
+#
+# A default location can be specified for each database driver ID, in
+# a dictionary. Either an absolute or relative path can be specified.
+#
+# Version-specific defaults can also be specified, which will take priority
+# over un-versioned paths.
+#
+# In cases where it may be difficult to know what the working directory
+# is, "$DIR" can be specified. This will be replaced with the path to the
+# top-level pgAdmin4.py file. For example, on macOS we might use:
+#
+# $DIR/../../SharedSupport
+#
+##########################################################################
+DEFAULT_BINARY_PATHS = {
+    "pg": "/usr/bin",
+    "pg-{{ PSQL_VERSION }}": "",
+}
 
 ##########################################################################
 # Master password is used to encrypt/decrypt saved server passwords
@@ -89,7 +119,7 @@ MASTER_PASSWORD_REQUIRED = True
 # by specifying %u in config value.
 # E.g. - MASTER_PASSWORD_HOOK = '<PATH>/passwdgen_script.sh %u'
 ##########################################################################
-MASTER_PASSWORD_HOOK = 'cat __DATA_DIR__/master_pwd'
+MASTER_PASSWORD_HOOK = 'cat {{ data_dir }}/master_pwd'
 
 ##########################################################################
 # External Authentication Sources
@@ -125,5 +155,5 @@ WEBSERVER_REMOTE_USER = 'Ynh-User'
 # PSQL is always enabled in Desktop mode, however in server mode it is
 # disabled by default because users can run arbitrary commands on the
 # server through it.
-ENABLE_PSQL = True
+ENABLE_PSQL = False
 
