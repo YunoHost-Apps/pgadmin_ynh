@@ -11,7 +11,7 @@ It shall NOT be edited by hand.
 Manage PostgreSQL databases over the web
 
 [![🌐 Official app website](https://img.shields.io/badge/Official_app_website-darkgreen?style=for-the-badge)](https://www.pgadmin.org)
-[![Version: 9.6~ynh1](https://img.shields.io/badge/Version-9.6~ynh1-rgba(0,150,0,1)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/pgadmin/)
+[![Version: 9.7~ynh1](https://img.shields.io/badge/Version-9.7~ynh1-rgb(18,138,11)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/pgadmin/)
 
 <div align="center">
 <a href="https://apps.yunohost.org/app/pgadmin"><img height="100px" src="https://github.com/YunoHost/yunohost-artwork/raw/refs/heads/main/badges/neopossum-badges/badge_more_info_on_the_appstore.svg"/></a>
