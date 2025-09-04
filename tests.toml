@@ -19,3 +19,23 @@ test_format = 1.0
     test_upgrade_from.9bad4942822c461439d0823e82b29272cf08d187.name = "7.2~ynh1"
     test_upgrade_from.94b5a404c82e951f8945450ff92243f559f8a803.name = "Last packaging v1 version"
     test_upgrade_from.b1cd2eff160238a6059c9806b7301edc9edd8572.name = "Before helper 2.1"
+
+    # -------------------------------
+    # Curl tests to validate that the app works
+    # -------------------------------
+    [default.curl_tests]
+    logged_out.path = "/"
+    logged_out.expect_title = "302 Found"
+    logged_out.expect_return_code = 302
+
+    home.path = "/"
+    home.logged_on_sso = true
+    home.expect_title = "pgAdmin 4"
+
+    browser.path = "/browser/"
+    browser.logged_on_sso = true
+    browser.expect_title = "pgAdmin 4"
+
+    nodes.path = "/browser/nodes/"
+    nodes.logged_on_sso = true
+    nodes.expect_content = "{\"success\":1,\"errormsg\":\"\",\"info\":\"\",\"result\":null,\"data\":[{\"id\":\"server_group_1\",\"label\":\"Servers\",\"icon\":\"icon-server_group\",\"inode\":true,\"_type\":\"server_group\",\"_id\":\"1\",\"_pid\":null,\"module\":\"pgadmin.node.server_group\",\"can_delete\":false,\"user_id\":1,\"is_shared\":false}]}"
