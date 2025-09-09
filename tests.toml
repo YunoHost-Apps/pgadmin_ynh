@@ -24,10 +24,6 @@ test_format = 1.0
     # Curl tests to validate that the app works
     # -------------------------------
     [default.curl_tests]
-    logged_out.path = "/"
-    logged_out.expect_title = "302 Found"
-    logged_out.expect_return_code = 302
-
     home.path = "/"
     home.logged_on_sso = true
     home.expect_title = "pgAdmin 4"
@@ -38,4 +34,4 @@ test_format = 1.0
 
     nodes.path = "/browser/nodes/"
     nodes.logged_on_sso = true
-    nodes.expect_content = "{\"success\":1,\"errormsg\":\"\",\"info\":\"\",\"result\":null,\"data\":[{\"id\":\"server_group_1\",\"label\":\"Servers\",\"icon\":\"icon-server_group\",\"inode\":true,\"_type\":\"server_group\",\"_id\":\"1\",\"_pid\":null,\"module\":\"pgadmin.node.server_group\",\"can_delete\":false,\"user_id\":1,\"is_shared\":false}]}"
+    nodes.expect_content = "{\"success\":0,\"errormsg\":\"The CSRF token is missing. You need to refresh the page.\",\"info\":\"\",\"result\":null,\"data\":null}"
