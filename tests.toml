@@ -35,3 +35,4 @@ test_format = 1.0
     nodes.path = "/browser/nodes/"
     nodes.logged_on_sso = true
     nodes.expect_content = "{\"success\":0,\"errormsg\":\"The CSRF token is missing. You need to refresh the page.\",\"info\":\"\",\"result\":null,\"data\":null}"
+    nodes.expect_return_code = 401
