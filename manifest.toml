@@ -7,7 +7,7 @@ name = "pgAdmin4"
 description.en = "Manage PostgreSQL databases over the web"
 description.fr = "Application web de gestion des bases de données PostgreSQL"
 
-version = "9.12~ynh1"
+version = "9.14~ynh1"
 
 maintainers = ["Josué Tille"]
 
@@ -43,13 +43,13 @@ ram.runtime = "200M"
 [resources]
     [resources.sources.pgadmin_prebuilt_armv7_bookworm]
     prefetch = false
-    armhf.url = "https://github.com/YunoHost-Apps/pgadmin_python_build/releases/download/v9.12/pgadmin_9.12-bookworm-bin1_armv7l.tar.gz"
-    armhf.sha256 = "c82cd495544b11a16f98085da578b3b114b64cd28592356793f3c71b08a18061"
+    armhf.url = "https://github.com/YunoHost-Apps/pgadmin_python_build/releases/download/v9.14/pgadmin_9.14-bookworm-bin1_armv7l.tar.gz"
+    armhf.sha256 = "c27faf94d23be7210736634d312d4208acf027bfbad6869fddc59ca384584886"
 
     [resources.sources.pgadmin_prebuilt_armv7_trixie]
     prefetch = false
-    armhf.url = "https://github.com/YunoHost-Apps/pgadmin_python_build/releases/download/v9.12/pgadmin_9.12-trixie-bin1_armv7l.tar.gz"
-    armhf.sha256 = "0d8dd27a810a35120babab63c0a94bf108555a7a2b49d8a4774591c555f41793"
+    armhf.url = "https://github.com/YunoHost-Apps/pgadmin_python_build/releases/download/v9.14/pgadmin_9.14-trixie-bin1_armv7l.tar.gz"
+    armhf.sha256 = "35a7dac3bc412b710b08529f1a97bf160b321b454a368aa8bfce3f077ce8ed10"
 
     [resources.system_user]
     allow_email = true
