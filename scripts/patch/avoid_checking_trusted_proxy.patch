@@ -1,0 +1,14 @@
+diff --git a/pgadmin/authenticate/webserver.py b/pgadmin/authenticate/webserver.py
+index bb8c20b9f..b553a8258 100644
+--- a/pgadmin/authenticate/webserver.py
++++ b/pgadmin/authenticate/webserver.py
+@@ -59,6 +59,9 @@ def _peer_is_trusted_proxy():
+     trigger it on every request; a malformed WEBSERVER_TRUSTED_PROXIES
+     itself is an operator misconfiguration and stays at warning.
+     """
++    # BEGIN Yunohost Patch
++    return True
++    # END Yunohost Patch
+     if not isinstance(config.WEBSERVER_TRUSTED_PROXIES, (list, tuple)):
+         current_app.logger.warning(
+             "Webserver auth: WEBSERVER_TRUSTED_PROXIES must be a list or "

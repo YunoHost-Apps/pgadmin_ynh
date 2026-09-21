@@ -66,6 +66,7 @@ install_source() {
     if ! grep -F -q '# BEGIN Yunohost Patch' "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/pgadmin/authenticate/webserver.py"; then
         pushd "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4"
         patch -p1 < "$YNH_APP_BASEDIR"/scripts/patch/change_default_webserver_new_user_role_to_admin.patch
+        patch -p1 < "$YNH_APP_BASEDIR"/scripts/patch/avoid_checking_trusted_proxy.patch
         popd
     fi
     if ! grep -F -q '# BEGIN Yunohost Patch' "$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/pgadmin/browser/__init__.py"; then
@@ -75,6 +76,10 @@ install_source() {
     fi
     # Customize system config file
     ynh_replace_regex --match="system_config_dir = '/etc/pgadmin'" --replace="system_config_dir = '$config_dir'" --file="$install_dir/venv/lib/python$python_version/site-packages/pgadmin4/pgadmin/evaluate_config.py"
+}
+
+ensure_vars_set() {
+    ynh_app_setting_set_default --key=webserver_secret --value="$(ynh_string_random --length=40)"
 }
 
 set_permission() {
