@@ -13,7 +13,7 @@ ExecStart=__INSTALL_DIR__/venv/bin/gunicorn --bind unix:/run/__APP__/socket/app.
 # Protect the socket in a way that only www-data can access to it
 ExecStartPre=/bin/mkdir /run/__APP__/socket
 ExecStartPre=/bin/chmod 750 /run/__APP__/socket
-ExecStartPre=+/bin/chown pgadmin:www-data /run/__APP__/socket
+ExecStartPre=+/bin/chown __APP__:www-data /run/__APP__/socket
 Restart=always
 RestartSec=3
 
