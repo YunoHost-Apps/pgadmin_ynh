@@ -31,25 +31,14 @@ install_source() {
         ynh_safe_rm "$install_dir"/venv/pyvenv.cfg
     fi
 
-    if uname -m | grep -q arm
-    then
-        ynh_setup_source --dest_dir "$install_dir"/venv/ --source_id "pgadmin_prebuilt_armv7_$(lsb_release --codename --short)" --full_replace
 
-        # Fix multi-instance support
-        for f in "$install_dir"/venv/bin/*; do
-            if ! [[ $f =~ "__" ]]; then
-                ynh_replace_regex --match='#!'/opt/yunohost/pgadmin/venv --replace='#!'"$install_dir"/venv --file="$f"
-            fi
-        done
-    else
-        # Install virtualenv if it don't exist
-        test -e "$install_dir"/venv/bin/python3 || python3 -m venv "$install_dir"/venv
+    # Install virtualenv if it don't exist
+    test -e "$install_dir"/venv/bin/python3 || python3 -m venv "$install_dir"/venv
 
-        # Install pgadmin in virtualenv
-        pip="$install_dir"/venv/bin/pip
-        $pip install --upgrade 'pip<24.1' wheel
-        $pip install --upgrade -r "$YNH_APP_BASEDIR/conf/requirement_$(lsb_release --codename --short).txt"
-    fi
+    # Install pgadmin in virtualenv
+    pip="$install_dir"/venv/bin/pip
+    $pip install --upgrade 'pip<24.1' wheel
+    $pip install --upgrade -r "$YNH_APP_BASEDIR/conf/requirement_$(lsb_release --codename --short).txt"
 
     # Apply patchs if needed
     # Note that we put patch into scripts dir because /source are not stored and can't be used on restore
