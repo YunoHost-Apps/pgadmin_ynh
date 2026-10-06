@@ -148,6 +148,28 @@ WEBSERVER_AUTO_CREATE_USER = True
 
 WEBSERVER_REMOTE_USER = 'Ynh-User'
 
+# Accept the remote user identity from an inbound HTTP request header (not
+# just the WSGI/CGI environment). This is required only for reverse proxies
+# that pass the identity as a header rather than setting the REMOTE_USER
+# CGI variable.
+# SECURITY: only enable this when the proxy in front of pgAdmin OVERWRITES
+# this header on every request before it reaches pgAdmin; otherwise any
+# client that can reach pgAdmin can assert any identity it likes.
+WEBSERVER_REMOTE_USER_FROM_HEADER = True
+
+# IP addresses/CIDR ranges of the reverse proxies that are allowed to assert
+# the identity header above. An empty list means no peer is trusted, so
+# WEBSERVER_REMOTE_USER_FROM_HEADER stays inert even if enabled.
+# Not used because we are using the unix socket and the unix socket is
+# enough protected in a way that only nginx can use it
+#WEBSERVER_TRUSTED_PROXIES = []
+
+# Optional shared secret that the trusted proxy must inject into the request
+# (in the header named by WEBSERVER_SHARED_SECRET_HEADER) for the header-based
+# identity to be accepted. Leave as None to skip this additional check.
+WEBSERVER_SHARED_SECRET = '{{ webserver_secret }}'
+WEBSERVER_SHARED_SECRET_HEADER = 'X-Pgadmin-Webserver-Secret'
+
 ##########################################################################
 # PSQL tool settings
 ##########################################################################

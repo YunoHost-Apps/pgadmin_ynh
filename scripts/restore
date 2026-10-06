@@ -39,7 +39,7 @@ set_permission
 #=================================================
 ynh_script_progression "Reloading NGINX web server and $app's service..."
 
-ynh_systemctl --service="$app.service" --action="restart" --wait_until="Listening at: unix:/run/$app/app.socket" --log_path=systemd
+ynh_systemctl --service="$app.service" --action="restart" --wait_until="Listening at: unix:/run/$app/socket/app.socket" --log_path=systemd
 
 ynh_systemctl --service=nginx --action=reload
 

@@ -24,6 +24,8 @@ fi
 #=================================================
 ynh_script_progression "Ensuring downward compatibility..."
 
+ensure_vars_set
+
 # Clean old uwsgi config
 ynh_safe_rm /etc/uwsgi/apps-enabled/pgadmin.ini
 
@@ -89,7 +91,7 @@ set_permission
 #=================================================
 ynh_script_progression "Starting $app's systemd service..."
 
-ynh_systemctl --service="$app.service" --action="restart" --wait_until="Listening at: unix:/run/$app/app.socket" --log_path=systemd
+ynh_systemctl --service="$app.service" --action="restart" --wait_until="Listening at: unix:/run/$app/socket/app.socket" --log_path=systemd
 
 #=================================================
 # END OF SCRIPT
