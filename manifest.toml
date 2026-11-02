@@ -7,7 +7,7 @@ name = "pgAdmin4"
 description.en = "Manage PostgreSQL databases over the web"
 description.fr = "Application web de gestion des bases de données PostgreSQL"
 
-version = "9.18~ynh1"
+version = "9.19~ynh1"
 
 maintainers = ["Josué Tille"]
 
